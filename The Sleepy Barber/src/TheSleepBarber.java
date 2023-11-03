@@ -44,7 +44,6 @@ class BarberShop {
     public void customer(int id) throws InterruptedException {
         System.out.println("Customer " + id + " is entering the shop.");
 
-        chairs.acquire();
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
             waitingCustomers.offer(id);
