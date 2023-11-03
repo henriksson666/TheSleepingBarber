@@ -1,10 +1,10 @@
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TheSleepBarber {
     public static final int CHAIRS = 5;
-    public static final int NUM_CUSTOMERS = 10;
 
     public static void main(String[] args) {
         BarberShop barberShop = new BarberShop();
@@ -12,16 +12,14 @@ public class TheSleepBarber {
         Thread barberThread = new Barber(barberShop);
         barberThread.start();
 
-        for (int i = 0; i < NUM_CUSTOMERS; i++) {
-            Thread customerThread = new Customer(barberShop, i);
-            customerThread.start();
-        }
+        Thread customerGeneratorThread = new Thread(new CustomerGenerator(barberShop));
+        customerGeneratorThread.start();
     }
 }
 
 class BarberShop {
     private Semaphore customers = new Semaphore(0);
-    private Semaphore barbers = new Semaphore(0);
+    private Semaphore chairs = new Semaphore(TheSleepBarber.CHAIRS);
     private Semaphore mutex = new Semaphore(1);
     private Queue<Integer> waitingCustomers = new LinkedList<>();
 
@@ -36,26 +34,28 @@ class BarberShop {
             mutex.acquire();
             int customerId = waitingCustomers.poll();
             mutex.release();
-
-            barbers.release();
+            chairs.release();
 
             System.out.println("Barber is cutting hair for customer " + customerId);
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         }
     }
 
     public void customer(int id) throws InterruptedException {
+        System.out.println("Customer " + id + " is entering the shop.");
+
+        chairs.acquire();
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
             waitingCustomers.offer(id);
             customers.release();
+            System.out.println("Customer " + id + " is waiting for a haircut.");
             mutex.release();
-            barbers.acquire(); // Sleep if no barbers are available
-
+            //chairs.acquire();
             System.out.println("Customer " + id + " is getting a haircut.");
         } else {
-            mutex.release();
             System.out.println("Customer " + id + " is leaving because the shop is full.");
+            mutex.release();
         }
     }
 }
@@ -77,19 +77,23 @@ class Barber extends Thread {
     }
 }
 
-class Customer extends Thread {
+class CustomerGenerator extends Thread {
     private BarberShop shop;
-    private int id;
+    private int customerId = 1;
 
-    public Customer(BarberShop shop, int id) {
+    public CustomerGenerator(BarberShop shop) {
         this.shop = shop;
-        this.id = id;
     }
 
     @Override
     public void run() {
         try {
-            shop.customer(id);
+            while (true) {
+                shop.customer(customerId);
+                customerId++;
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 2);
+                Thread.sleep(randomDelay * 1000);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
