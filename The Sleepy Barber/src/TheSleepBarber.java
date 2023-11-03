@@ -37,7 +37,7 @@ class BarberShop {
             chairs.release();
 
             System.out.println("Barber is cutting hair for customer " + customerId);
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         }
     }
 
@@ -48,10 +48,9 @@ class BarberShop {
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
             waitingCustomers.offer(id);
             customers.release();
-            System.out.println("Customer " + id + " is waiting for a haircut.");
             mutex.release();
             //chairs.acquire();
-            System.out.println("Customer " + id + " is getting a haircut.");
+            //System.out.println("Customer " + id + " is getting a haircut.");
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
             mutex.release();
@@ -90,7 +89,7 @@ class CustomerGenerator extends Thread {
             while (true) {
                 shop.customer(customerId);
                 customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 2);
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 4);
                 Thread.sleep(randomDelay * 1000);
             }
         } catch (InterruptedException e) {
