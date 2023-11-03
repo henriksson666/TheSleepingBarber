@@ -23,26 +23,31 @@ class BarberShop {
     private Semaphore customers = new Semaphore(0);
     private Semaphore barbers = new Semaphore(0);
     private Semaphore mutex = new Semaphore(1);
-    private Queue<Integer> waitingCustomers = new LinkedList<>(); // FIFO queue
+    private Queue<Integer> waitingCustomers = new LinkedList<>();
 
     public void barber() throws InterruptedException {
         while (true) {
-            customers.acquire(); // Sleep if there are no customers
+            customers.acquire();
+
+            if (waitingCustomers.isEmpty()) {
+                System.out.println("Barber is sleeping.");
+            }
+
             mutex.acquire();
-            int customerId = waitingCustomers.poll(); // Get the first customer in the queue
+            int customerId = waitingCustomers.poll();
             mutex.release();
 
             barbers.release();
 
             System.out.println("Barber is cutting hair for customer " + customerId);
-            Thread.sleep(2000); // Simulate hair cutting
+            Thread.sleep(2000);
         }
     }
 
     public void customer(int id) throws InterruptedException {
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
-            waitingCustomers.offer(id); // Join the end of the queue
+            waitingCustomers.offer(id);
             customers.release();
             mutex.release();
             barbers.acquire(); // Sleep if no barbers are available
