@@ -31,11 +31,7 @@ public class TheSleepBarber extends Application {
         primaryStage.centerOnScreen();
         primaryStage.getIcons().add(new Image("icon.png"));
         primaryStage.show();
-        
-        
-        
-        
-        
+
         BarberShop barberShop = new BarberShop();
 
         Thread barberThread = new Barber(barberShop);
@@ -63,23 +59,29 @@ class BarberShop {
     private Semaphore customers = new Semaphore(0);
     private Semaphore chairs = new Semaphore(TheSleepBarber.CHAIRS);
     private Semaphore mutex = new Semaphore(1);
+    private Semaphore barbers = new Semaphore(0);
     private Queue<Integer> waitingCustomers = new LinkedList<>();
 
     public void barber() throws InterruptedException {
         while (true) {
-            customers.acquire();
-
+            // customers.acquire();
+            mutex.acquire();
             if (waitingCustomers.isEmpty()) {
                 System.out.println("Barber is sleeping.");
+                mutex.release();
+                customers.acquire();
+            } else {
+
+                //mutex.acquire();
+                int customerId = waitingCustomers.poll();
+                mutex.release();
+                barbers.acquire();
+                //mutex.release();
+                chairs.release();
+
+                System.out.println("Barber is cutting hair for customer " + customerId);
+                Thread.sleep(3000);
             }
-
-            mutex.acquire();
-            int customerId = waitingCustomers.poll();
-            mutex.release();
-            chairs.release();
-
-            System.out.println("Barber is cutting hair for customer " + customerId);
-            Thread.sleep(5000);
         }
     }
 
@@ -91,8 +93,7 @@ class BarberShop {
             waitingCustomers.offer(id);
             customers.release();
             mutex.release();
-             chairs.acquire();
-            // System.out.println("Customer " + id + " is getting a haircut.");
+            barbers.release();
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
             mutex.release();
@@ -117,6 +118,31 @@ class Barber extends Thread {
     }
 }
 
+/*
+ * class CustomerGenerator extends Thread {
+ * private BarberShop shop;
+ * private int customerId = 1;
+ * 
+ * public CustomerGenerator(BarberShop shop) {
+ * this.shop = shop;
+ * }
+ * 
+ * @Override
+ * public void run() {
+ * try {
+ * while (true) {
+ * shop.customer(customerId);
+ * customerId++;
+ * int randomDelay = ThreadLocalRandom.current().nextInt(1, 10);
+ * Thread.sleep(randomDelay * 100);
+ * }
+ * } catch (InterruptedException e) {
+ * e.printStackTrace();
+ * }
+ * }
+ * }
+ */
+
 class CustomerGenerator extends Thread {
     private BarberShop shop;
     private int customerId = 1;
@@ -128,14 +154,18 @@ class CustomerGenerator extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 shop.customer(customerId);
                 customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 4);
-                Thread.sleep(randomDelay * 1000);
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 5);
+                Thread.sleep(randomDelay * 100);
+
+                if (customerId == 20) {
+                    Thread.currentThread().interrupt();
+                }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Customer generator thread interrupted.");
         }
     }
 }
