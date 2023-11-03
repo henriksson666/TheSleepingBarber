@@ -3,10 +3,39 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TheSleepBarber {
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+public class TheSleepBarber extends Application {
     public static final int CHAIRS = 5;
 
     public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Pane root = createPane();
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("The Sleepy Barber");
+        primaryStage.setResizable(false);
+        primaryStage.centerOnScreen();
+        primaryStage.getIcons().add(new Image("icon.png"));
+        primaryStage.show();
+        
+        
+        
+        
+        
         BarberShop barberShop = new BarberShop();
 
         Thread barberThread = new Barber(barberShop);
@@ -14,6 +43,19 @@ public class TheSleepBarber {
 
         Thread customerGeneratorThread = new Thread(new CustomerGenerator(barberShop));
         customerGeneratorThread.start();
+    }
+
+    private Pane createPane() {
+        int width = 1300;
+        Pane pane = new Pane();
+        pane.setPrefSize(width, 650);
+        Image backgroundImage = new Image("background.png");
+        BackgroundSize backgroundSize = new BackgroundSize(1100, 650, false, false, false, false);
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, backgroundSize);
+        pane.setBackground(new Background(background));
+
+        return pane;
     }
 }
 
@@ -49,8 +91,8 @@ class BarberShop {
             waitingCustomers.offer(id);
             customers.release();
             mutex.release();
-            //chairs.acquire();
-            //System.out.println("Customer " + id + " is getting a haircut.");
+             chairs.acquire();
+            // System.out.println("Customer " + id + " is getting a haircut.");
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
             mutex.release();
