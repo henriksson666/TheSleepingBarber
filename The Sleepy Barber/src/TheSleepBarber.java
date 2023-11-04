@@ -77,7 +77,7 @@ class BarberShop {
                 chairs.release();
 
                 System.out.println("Barber is cutting hair for customer " + customerId);
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             }
         }
     }
@@ -130,8 +130,8 @@ class CustomerGenerator extends Thread {
             while (true) {
                 shop.customer(customerId);
                 customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 10);
-                Thread.sleep(randomDelay * 100);
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 4);
+                Thread.sleep(randomDelay * 1000);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
