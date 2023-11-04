@@ -64,19 +64,16 @@ class BarberShop {
 
     public void barber() throws InterruptedException {
         while (true) {
-            // customers.acquire();
+
             mutex.acquire();
             if (waitingCustomers.isEmpty()) {
                 System.out.println("Barber is sleeping.");
                 mutex.release();
                 customers.acquire();
             } else {
-
-                //mutex.acquire();
                 int customerId = waitingCustomers.poll();
                 mutex.release();
                 barbers.acquire();
-                //mutex.release();
                 chairs.release();
 
                 System.out.println("Barber is cutting hair for customer " + customerId);
@@ -118,36 +115,34 @@ class Barber extends Thread {
     }
 }
 
-/*
- * class CustomerGenerator extends Thread {
- * private BarberShop shop;
- * private int customerId = 1;
- * 
- * public CustomerGenerator(BarberShop shop) {
- * this.shop = shop;
- * }
- * 
- * @Override
- * public void run() {
- * try {
- * while (true) {
- * shop.customer(customerId);
- * customerId++;
- * int randomDelay = ThreadLocalRandom.current().nextInt(1, 10);
- * Thread.sleep(randomDelay * 100);
- * }
- * } catch (InterruptedException e) {
- * e.printStackTrace();
- * }
- * }
- * }
- */
-
 class CustomerGenerator extends Thread {
     private BarberShop shop;
     private int customerId = 1;
 
     public CustomerGenerator(BarberShop shop) {
+        this.shop = shop;
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                shop.customer(customerId);
+                customerId++;
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 10);
+                Thread.sleep(randomDelay * 100);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class CustomerGeneratorPaused extends Thread {
+    private BarberShop shop;
+    private int customerId = 1;
+
+    public CustomerGeneratorPaused(BarberShop shop) {
         this.shop = shop;
     }
 
