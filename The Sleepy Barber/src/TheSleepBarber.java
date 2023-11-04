@@ -4,7 +4,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Application;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -12,6 +16,9 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class TheSleepBarber extends Application {
@@ -32,13 +39,30 @@ public class TheSleepBarber extends Application {
         primaryStage.getIcons().add(new Image("icon.png"));
         primaryStage.show();
 
+        VBox permanentControlVBox = createPermanentControlVBox();
+        root.getChildren().add(permanentControlVBox);
+        Button resetButton = createReseButton("Play");
+        VBox barberControlVBox = createControlVBox("Barber");
+        VBox customerControlVBox = createControlVBox("Customer");
+        Slider barberSlider = creatSlider(0, 10, 2);
+        Slider customerSlider = creatSlider(0, 10, 2);
+        barberControlVBox.getChildren().add(barberSlider);
+        customerControlVBox.getChildren().add(customerSlider);
+        permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox);
+
+
         BarberShop barberShop = new BarberShop();
-
         Thread barberThread = new Barber(barberShop);
-        barberThread.start();
-
+        //barberThread.start();
         Thread customerGeneratorThread = new Thread(new CustomerGenerator(barberShop));
-        customerGeneratorThread.start();
+        //customerGeneratorThread.start();
+
+
+        resetButton.setOnAction(event -> {
+            resetButton.setText("Reset");
+            barberThread.start();
+            customerGeneratorThread.start();
+        });
     }
 
     private Pane createPane() {
@@ -53,6 +77,85 @@ public class TheSleepBarber extends Application {
 
         return pane;
     }
+
+    private VBox createPermanentControlVBox() {
+        int xProperty = 1100;
+        VBox vBox = new VBox();
+        vBox.translateXProperty().set(xProperty);
+        vBox.translateYProperty().set(0);
+        vBox.setPrefSize(200, 80);
+        vBox.setStyle(
+                "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 5; -fx-alignment: center;");
+
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(10.0);
+        shadow.setOffsetX(-1.0);
+        shadow.setOffsetY(0);
+        shadow.setColor(Color.BLACK);
+        vBox.setEffect(shadow);
+
+        return vBox;
+    }
+
+    private VBox createControlVBox(String string) {
+        VBox vBox = new VBox();
+        vBox.setPrefSize(200, 100);
+        vBox.setStyle(
+                "-fx-background-color: rgba(245, 245, 220, 0.7); -fx-background-radius: 2px; -fx-alignment: center; -fx-padding: 2px;");
+
+        Text text = new Text(string);
+        text.setStyle("-fx-fill: #000; -fx-font-size: 15px; -fx-font-weight: bold;");
+
+        vBox.getChildren().add(text);
+
+        return vBox;
+    }
+
+    private Slider creatSlider(int min, int max, int value) {
+        Slider slider = new Slider(min, max, value);
+        int trackHeight = 5;
+        slider.setShowTickLabels(true);
+        slider.setMajorTickUnit(1);
+        String trackStyle = "-fx-control-inner-background: #3aa198; -fx-background-insets: " + (trackHeight / 2) + " 0 "
+                + (trackHeight / 2) + " 0;";
+        slider.setStyle(trackStyle);
+        slider.setStyle("-fx-tick-label-fill: #e74c3c;");
+        slider.setStyle("-fx-font-size: 10px;");
+        slider.setPrefHeight(5);
+        slider.cursorProperty().set(Cursor.HAND);
+
+        return slider;
+    }
+
+    private Button createReseButton(String string) {
+        Button button = new Button();
+        button.setText(string);
+        button.setPrefSize(180, 40);
+        button.cursorProperty().set(Cursor.HAND);
+        button.styleProperty().set(
+                "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+
+        button.onMouseEnteredProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+        button.onMouseExitedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+
+        button.onMousePressedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #318176; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+        button.onMouseReleasedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+
+        return button;
+    }
+
 }
 
 class BarberShop {
@@ -77,7 +180,7 @@ class BarberShop {
                 chairs.release();
 
                 System.out.println("Barber is cutting hair for customer " + customerId);
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             }
         }
     }
@@ -130,7 +233,7 @@ class CustomerGenerator extends Thread {
             while (true) {
                 shop.customer(customerId);
                 customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 4);
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 7);
                 Thread.sleep(randomDelay * 1000);
             }
         } catch (InterruptedException e) {
