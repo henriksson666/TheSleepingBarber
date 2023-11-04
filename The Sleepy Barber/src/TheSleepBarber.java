@@ -88,6 +88,7 @@ class BarberShop {
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
             waitingCustomers.offer(id);
+            System.out.println("Customer " + id + " is waiting in the waiting room.");
             customers.release();
             mutex.release();
             barbers.release();
