@@ -87,6 +87,8 @@ public class TheSleepBarber extends Application {
 
             if (isReset[0]) {
                 barberShop.reset();
+                barberSlider.setValue(2);
+                customerSlider.setValue(2);
                 barberThread[0].interrupt();
                 customerGeneratorThread[0].interrupt();
                 barberThread[0] = new Barber(barberShop);
