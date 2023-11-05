@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -48,24 +49,32 @@ public class TheSleepBarber extends Application {
         VBox barberControlVBox = createControlVBox("Barber");
         VBox customerControlVBox = createControlVBox("Customer");
         VBox informationControlVBox = createInformationControlVBox();
-        Slider barberSlider = creatSlider(0, 10, 2);
-        Slider customerSlider = creatSlider(0, 10, 2);
+        Slider barberSlider = creatSlider(1, 10, 2);
+        Slider customerSlider = creatSlider(1, 10, 2);
         Text barberSliderText = createText("Barber Speed: ");
+        Text barberSpeed = new Text("" + (int) barberSlider.getValue());
         Text customerSliderText = createText("Customer Speed: ");
+        Text customerSpeed = new Text("" + (int) customerSlider.getValue());
         Text waitingRoomCustomersText = createText("Waiting Room Customers: ");
+        Text waitingRoomCustomers = new Text("0");
         Text barberStatusText = createText("Barber Status: ");
+        Text barberStatus = new Text("Inactive");
         Text customerStatusText = createText("Customer Status: ");
+        Text customerStatus = new Text("Inactive");
         Text servedCustomersText = createText("Served Customers: ");
+        Text servedCustomers = new Text("0");
         Text lostCustomersText = createText("Lost Customers: ");
-        informationControlVBox.getChildren().addAll(barberSliderText, barberSlider, customerSliderText, customerSlider,
-                waitingRoomCustomersText, barberStatusText, customerStatusText, servedCustomersText, lostCustomersText);
+        Text lostCustomers = new Text("0");
+        informationControlVBox.getChildren().addAll(barberSliderText, barberSpeed, customerSliderText, customerSpeed,
+                waitingRoomCustomersText, waitingRoomCustomers, barberStatusText, barberStatus, customerStatusText,
+                customerStatus, servedCustomersText, servedCustomers, lostCustomersText, lostCustomers);
 
         barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
         customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
         permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox);
         root.getChildren().add(informationControlVBox);
 
-        BarberShop barberShop = new BarberShop();
+        BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
         Barber[] barberThread = { new Barber(barberShop) };
         CustomerGenerator[] customerGeneratorThread = { new CustomerGenerator(barberShop) };
 
@@ -73,8 +82,11 @@ public class TheSleepBarber extends Application {
             resetButton.setText("Reset");
             togglePlayPauseBarber.setText("Pause");
             togglePlayPauseCustomer.setText("Pause");
+            barberStatus.setText("Active");
+            customerStatus.setText("Active");
 
             if (isReset[0]) {
+                barberShop.reset();
                 barberThread[0].interrupt();
                 customerGeneratorThread[0].interrupt();
                 barberThread[0] = new Barber(barberShop);
@@ -91,9 +103,11 @@ public class TheSleepBarber extends Application {
         togglePlayPauseBarber.setOnAction(event -> {
             if (togglePlayPauseBarber.getText().equals("Pause")) {
                 togglePlayPauseBarber.setText("Play");
+                barberStatus.setText("Inactive");
                 barberShop.pauseThread();
             } else {
                 togglePlayPauseBarber.setText("Pause");
+                barberStatus.setText("Active");
                 barberShop.resumeThread();
             }
         });
@@ -101,15 +115,21 @@ public class TheSleepBarber extends Application {
         togglePlayPauseCustomer.setOnAction(event -> {
             if (togglePlayPauseCustomer.getText().equals("Pause")) {
                 togglePlayPauseCustomer.setText("Play");
+                customerStatus.setText("Inactive");
                 customerGeneratorThread[0].pauseThread();
             } else {
                 togglePlayPauseCustomer.setText("Pause");
+                customerStatus.setText("Active");
                 customerGeneratorThread[0].resumeThread();
             }
         });
 
         barberSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            
+            barberSpeed.setText("" + newValue.intValue());
+        });
+
+        customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            customerSpeed.setText("" + newValue.intValue());
         });
     }
 
@@ -154,7 +174,8 @@ public class TheSleepBarber extends Application {
     }
 
     private VBox createInformationControlVBox() {
-        int xProperty = 1100;
+        //int xProperty = 1100;
+        int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(217);
@@ -238,7 +259,19 @@ class BarberShop {
     private Semaphore mutex = new Semaphore(1);
     private Semaphore barbers = new Semaphore(0);
     private Queue<Integer> waitingCustomers = new LinkedList<>();
+    private int servedCustomersCount = 1;
+    private int lostCustomersCount = 1;
+    private Text waitingRoomCustomers;
+    private Text servedCustomers;
+    private Text lostCustomers;
+
     private volatile boolean isRunning = true;
+
+    public BarberShop(Text waitingRoomCustomers, Text servedCustomers, Text lostCustomers) {
+        this.waitingRoomCustomers = waitingRoomCustomers;
+        this.servedCustomers = servedCustomers;
+        this.lostCustomers = lostCustomers;
+    }
 
     public void barber() throws InterruptedException {
         try {
@@ -252,6 +285,8 @@ class BarberShop {
                         customers.acquire();
                     } else {
                         int customerId = waitingCustomers.poll();
+                        waitingRoomCustomers.setText("" + waitingCustomers.size());
+                        servedCustomers.setText("" + servedCustomersCount++);
                         mutex.release();
                         barbers.acquire();
                         chairs.release();
@@ -276,12 +311,16 @@ class BarberShop {
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepBarber.CHAIRS) {
             waitingCustomers.offer(id);
+            waitingRoomCustomers.setText("" + waitingCustomers.size());
             System.out.println("Customer " + id + " is waiting in the waiting room.");
             customers.release();
             mutex.release();
             barbers.release();
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
+            Platform.runLater(() -> {
+                lostCustomers.setText("" + lostCustomersCount++);
+            });
             mutex.release();
         }
     }
@@ -292,6 +331,30 @@ class BarberShop {
 
     public void resumeThread() {
         isRunning = true;
+    }
+
+    public void updateWaitingRoomCustomersText(int value) {
+        Platform.runLater(() -> waitingRoomCustomers.setText(String.valueOf(value)));
+    }
+
+    public void updateServedCustomersText(int value) {
+        Platform.runLater(() -> servedCustomers.setText(String.valueOf(value)));
+    }
+
+    public void updateLostCustomersText(int value) {
+        Platform.runLater(() -> lostCustomers.setText(String.valueOf(value)));
+    }
+
+    public void reset() {
+        servedCustomersCount = 1;
+        lostCustomersCount = 1;
+        waitingCustomers.clear();
+
+        Platform.runLater(() -> {
+            waitingRoomCustomers.setText("0");
+            servedCustomers.setText("0");
+            lostCustomers.setText("0");
+        });
     }
 }
 
