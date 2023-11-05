@@ -41,27 +41,62 @@ public class TheSleepBarber extends Application {
 
         VBox permanentControlVBox = createPermanentControlVBox();
         root.getChildren().add(permanentControlVBox);
-        Button resetButton = createReseButton("Play");
+        Button resetButton = createReseButton("Play Animation");
+        Button togglePlayPauseBarber = createReseButton("Play/Pause");
+        Button togglePlayPauseCustomer = createReseButton("Play/Pause");
         VBox barberControlVBox = createControlVBox("Barber");
         VBox customerControlVBox = createControlVBox("Customer");
+        VBox informationControlVBox = createInformationControlVBox();
         Slider barberSlider = creatSlider(0, 10, 2);
         Slider customerSlider = creatSlider(0, 10, 2);
-        barberControlVBox.getChildren().add(barberSlider);
-        customerControlVBox.getChildren().add(customerSlider);
-        permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox);
+        Text barberSliderText = createText("Barber Speed: ");
+        Text customerSliderText = createText("Customer Speed: ");
+        Text waitingRoomCustomersText = createText("Waiting Room Customers: ");
+        Text barberStatusText = createText("Barber Status: ");
+        Text customerStatusText = createText("Customer Status: ");
+        Text servedCustomersText = createText("Served Customers: ");
+        Text lostCustomersText = createText("Lost Customers: ");
+        Text customersSatistactionText = createText("Customers Satistaction: ");
+        Text customerInsatistactionText = createText("Customers Insatistaction: ");
+        informationControlVBox.getChildren().addAll(barberSliderText, barberSlider, customerSliderText, customerSlider,
+                waitingRoomCustomersText, barberStatusText, customerStatusText, servedCustomersText, lostCustomersText,
+                customersSatistactionText, customerInsatistactionText);
 
+        barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
+        customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
+        permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox);
+        root.getChildren().add(informationControlVBox);
 
         BarberShop barberShop = new BarberShop();
         Thread barberThread = new Barber(barberShop);
-        //barberThread.start();
         Thread customerGeneratorThread = new Thread(new CustomerGenerator(barberShop));
-        //customerGeneratorThread.start();
-
 
         resetButton.setOnAction(event -> {
             resetButton.setText("Reset");
+            togglePlayPauseBarber.setText("Pause");
+            togglePlayPauseCustomer.setText("Pause");
             barberThread.start();
             customerGeneratorThread.start();
+        });
+
+        togglePlayPauseBarber.setOnAction(event -> {
+            if (togglePlayPauseBarber.getText().equals("Play")) {
+                togglePlayPauseBarber.setText("Pause");
+                //barberThread.resume();
+            } else {
+                togglePlayPauseBarber.setText("Play");
+                //barberThread.suspend();
+            }
+        });
+
+        togglePlayPauseCustomer.setOnAction(event -> {
+            if (togglePlayPauseCustomer.getText().equals("Play")) {
+                togglePlayPauseCustomer.setText("Pause");
+                //customerGeneratorThread.resume();
+            } else {
+                togglePlayPauseCustomer.setText("Play");
+                //customerGeneratorThread.suspend();
+            }
         });
     }
 
@@ -83,9 +118,35 @@ public class TheSleepBarber extends Application {
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(0);
-        vBox.setPrefSize(200, 80);
+        vBox.setPrefSize(200, 100);
         vBox.setStyle(
                 "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 5; -fx-alignment: center;");
+
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(10.0);
+        shadow.setOffsetX(-1.0);
+        shadow.setOffsetY(0);
+        shadow.setColor(Color.BLACK);
+        vBox.setEffect(shadow);
+
+        return vBox;
+    }
+
+    private Text createText(String string) {
+        Text text = new Text(string);
+        text.setStyle("-fx-fill: #000; -fx-font-size: 15px; -fx-font-weight: bold;");
+
+        return text;
+    }
+
+    private VBox createInformationControlVBox() {
+        int xProperty = 1100;
+        VBox vBox = new VBox();
+        vBox.translateXProperty().set(xProperty);
+        vBox.translateYProperty().set(217);
+        vBox.setPrefSize(200, 433);
+        vBox.setStyle(
+                "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 10; -fx-alignment: center;");
 
         DropShadow shadow = new DropShadow();
         shadow.setRadius(10.0);
@@ -155,7 +216,6 @@ public class TheSleepBarber extends Application {
 
         return button;
     }
-
 }
 
 class BarberShop {
@@ -180,7 +240,7 @@ class BarberShop {
                 chairs.release();
 
                 System.out.println("Barber is cutting hair for customer " + customerId);
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             }
         }
     }
@@ -233,7 +293,7 @@ class CustomerGenerator extends Thread {
             while (true) {
                 shop.customer(customerId);
                 customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 7);
+                int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
                 Thread.sleep(randomDelay * 1000);
             }
         } catch (InterruptedException e) {
