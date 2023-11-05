@@ -30,6 +30,7 @@ public class TheSleepBarber extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        boolean[] isReset = { false };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -68,15 +69,24 @@ public class TheSleepBarber extends Application {
         root.getChildren().add(informationControlVBox);
 
         BarberShop barberShop = new BarberShop();
-        Barber barberThread = new Barber(barberShop);
-        CustomerGenerator customerGeneratorThread = new CustomerGenerator(barberShop);
+        Barber[] barberThread = { new Barber(barberShop) };
+        CustomerGenerator[] customerGeneratorThread = { new CustomerGenerator(barberShop) };
 
         resetButton.setOnAction(event -> {
             resetButton.setText("Reset");
             togglePlayPauseBarber.setText("Pause");
             togglePlayPauseCustomer.setText("Pause");
-            barberThread.start();
-            customerGeneratorThread.start();
+
+            if (isReset[0]) {
+                barberThread[0].interrupt();
+                customerGeneratorThread[0].interrupt();
+                barberThread[0] = new Barber(barberShop);
+                customerGeneratorThread[0] = new CustomerGenerator(barberShop);
+            }
+
+            barberThread[0].start();
+            customerGeneratorThread[0].start();
+            isReset[0] = true;
         });
 
         togglePlayPauseBarber.setOnAction(event -> {
@@ -92,14 +102,11 @@ public class TheSleepBarber extends Application {
         togglePlayPauseCustomer.setOnAction(event -> {
             if (togglePlayPauseCustomer.getText().equals("Pause")) {
                 togglePlayPauseCustomer.setText("Play");
-                // isCustomerRunning[0] = true;
-                customerGeneratorThread.pauseThread();
+                customerGeneratorThread[0].pauseThread();
             } else {
                 togglePlayPauseCustomer.setText("Pause");
-                // isCustomerRunning[0] = false;
-                customerGeneratorThread.resumeThread();
+                customerGeneratorThread[0].resumeThread();
             }
-            // System.out.println("Status: " + isCustomerRunning[0]);
         });
     }
 
@@ -231,24 +238,32 @@ class BarberShop {
     private volatile boolean isRunning = true;
 
     public void barber() throws InterruptedException {
-        while (true) {
-            if (isRunning) {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (isRunning) {
 
-                mutex.acquire();
-                if (waitingCustomers.isEmpty()) {
-                    System.out.println("Barber is sleeping.");
-                    mutex.release();
-                    customers.acquire();
-                } else {
-                    int customerId = waitingCustomers.poll();
-                    mutex.release();
-                    barbers.acquire();
-                    chairs.release();
+                    mutex.acquire();
+                    if (waitingCustomers.isEmpty()) {
+                        System.out.println("Barber is sleeping.");
+                        mutex.release();
+                        customers.acquire();
+                    } else {
+                        int customerId = waitingCustomers.poll();
+                        mutex.release();
+                        barbers.acquire();
+                        chairs.release();
 
-                    System.out.println("Barber is cutting hair for customer " + customerId);
-                    Thread.sleep(3000);
+                        System.out.println("Barber is cutting hair for customer " + customerId);
+                        Thread.sleep(3000);
+
+                        if (Thread.currentThread().isInterrupted()) {
+                            break;
+                        }
+                    }
                 }
             }
+        } catch (InterruptedException e) {
+            System.out.println("Barber thread interrupted.");
         }
     }
 
@@ -306,17 +321,21 @@ class CustomerGenerator extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 if (isRunning) {
 
                     shop.customer(customerId);
                     customerId++;
                     int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
                     Thread.sleep(randomDelay * 1000);
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        break;
+                    }
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Customer generator thread interrupted.");
         }
     }
 
