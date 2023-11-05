@@ -30,6 +30,8 @@ public class TheSleepBarber extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        boolean[] isBarberRunning = { true };
+        
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -82,20 +84,23 @@ public class TheSleepBarber extends Application {
         togglePlayPauseBarber.setOnAction(event -> {
             if (togglePlayPauseBarber.getText().equals("Play")) {
                 togglePlayPauseBarber.setText("Pause");
-                //barberThread.resume();
+                isBarberRunning[0] = true;
+                synchronized (isBarberRunning) {
+                    isBarberRunning.notify();
+                }
             } else {
                 togglePlayPauseBarber.setText("Play");
-                //barberThread.suspend();
+                isBarberRunning[0] = false;
             }
         });
 
         togglePlayPauseCustomer.setOnAction(event -> {
             if (togglePlayPauseCustomer.getText().equals("Play")) {
                 togglePlayPauseCustomer.setText("Pause");
-                //customerGeneratorThread.resume();
+                customerGeneratorThread.resume();
             } else {
                 togglePlayPauseCustomer.setText("Play");
-                //customerGeneratorThread.suspend();
+                customerGeneratorThread.suspend();
             }
         });
     }
@@ -271,6 +276,7 @@ class Barber extends Thread {
 
     @Override
     public void run() {
+        
         try {
             shop.barber();
         } catch (InterruptedException e) {
