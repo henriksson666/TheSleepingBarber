@@ -57,11 +57,8 @@ public class TheSleepBarber extends Application {
         Text customerStatusText = createText("Customer Status: ");
         Text servedCustomersText = createText("Served Customers: ");
         Text lostCustomersText = createText("Lost Customers: ");
-        Text customersSatistactionText = createText("Customers Satistaction: ");
-        Text customerInsatistactionText = createText("Customers Insatistaction: ");
         informationControlVBox.getChildren().addAll(barberSliderText, barberSlider, customerSliderText, customerSlider,
-                waitingRoomCustomersText, barberStatusText, customerStatusText, servedCustomersText, lostCustomersText,
-                customersSatistactionText, customerInsatistactionText);
+                waitingRoomCustomersText, barberStatusText, customerStatusText, servedCustomersText, lostCustomersText);
 
         barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
         customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
