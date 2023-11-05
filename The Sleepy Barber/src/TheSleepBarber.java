@@ -107,6 +107,10 @@ public class TheSleepBarber extends Application {
                 customerGeneratorThread[0].resumeThread();
             }
         });
+
+        barberSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            
+        });
     }
 
     private Pane createPane() {
