@@ -82,6 +82,8 @@ public class TheSleepBarber extends Application {
                 customerGeneratorThread[0].interrupt();
                 barberThread[0] = new Barber(barberShop);
                 customerGeneratorThread[0] = new CustomerGenerator(barberShop);
+                barberShop.resumeThread();
+                customerGeneratorThread[0].resumeThread();
             }
 
             barberThread[0].start();
