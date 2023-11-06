@@ -43,9 +43,9 @@ public class TheSleepBarber extends Application {
 
         VBox permanentControlVBox = createPermanentControlVBox();
         root.getChildren().add(permanentControlVBox);
-        Button resetButton = createButton("Play Animation");
-        Button togglePlayPauseBarber = createButton("Play/Pause");
-        Button togglePlayPauseCustomer = createButton("Play/Pause");
+        Button resetButton = createResetButton("Play Animation");
+        Button togglePlayPauseBarber = createTogglePlayPauseButton("Play/Pause");
+        Button togglePlayPauseCustomer = createTogglePlayPauseButton("Play/Pause");
         VBox barberControlVBox = createControlVBox("Barber");
         VBox customerControlVBox = createControlVBox("Customer");
         VBox informationControlVBox = createInformationControlVBox();
@@ -230,7 +230,36 @@ public class TheSleepBarber extends Application {
         return slider;
     }
 
-    private Button createButton(String string) {
+    private Button createResetButton(String string) {
+        Button button = new Button();
+        button.setText(string);
+        button.setPrefSize(180, 40);
+        button.cursorProperty().set(Cursor.HAND);
+        button.styleProperty().set(
+                "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+
+        button.onMouseEnteredProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+        button.onMouseExitedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+
+        button.onMousePressedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #318176; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+        button.onMouseReleasedProperty().set(event -> {
+            button.styleProperty().set(
+                    "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
+        });
+
+        return button;
+    }
+
+    private Button createTogglePlayPauseButton(String string) {
         Button button = new Button();
         button.setText(string);
         button.setPrefSize(180, 40);
