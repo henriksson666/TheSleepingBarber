@@ -43,9 +43,9 @@ public class TheSleepBarber extends Application {
 
         VBox permanentControlVBox = createPermanentControlVBox();
         root.getChildren().add(permanentControlVBox);
-        Button resetButton = createReseButton("Play Animation");
-        Button togglePlayPauseBarber = createReseButton("Play/Pause");
-        Button togglePlayPauseCustomer = createReseButton("Play/Pause");
+        Button resetButton = createButton("Play Animation");
+        Button togglePlayPauseBarber = createButton("Play/Pause");
+        Button togglePlayPauseCustomer = createButton("Play/Pause");
         VBox barberControlVBox = createControlVBox("Barber");
         VBox customerControlVBox = createControlVBox("Customer");
         VBox informationControlVBox = createInformationControlVBox();
@@ -84,6 +84,8 @@ public class TheSleepBarber extends Application {
             togglePlayPauseCustomer.setText("Pause");
             barberStatus.setText("Active");
             customerStatus.setText("Active");
+            togglePlayPauseBarber.setDisable(false);
+            togglePlayPauseCustomer.setDisable(false);
 
             if (isReset[0]) {
                 barberShop.reset();
@@ -125,6 +127,9 @@ public class TheSleepBarber extends Application {
                 customerGeneratorThread[0].resumeThread();
             }
         });
+
+        togglePlayPauseBarber.setDisable(true);
+        togglePlayPauseCustomer.setDisable(true);
 
         barberSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             barberSpeed.setText("" + newValue.intValue());
@@ -225,7 +230,7 @@ public class TheSleepBarber extends Application {
         return slider;
     }
 
-    private Button createReseButton(String string) {
+    private Button createButton(String string) {
         Button button = new Button();
         button.setText(string);
         button.setPrefSize(180, 40);
