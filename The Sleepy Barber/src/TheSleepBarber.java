@@ -155,7 +155,7 @@ public class TheSleepBarber extends Application {
 
     private VBox createPermanentControlVBox() {
         int xProperty = 1100;
-        //int xProperty = 500;
+        // int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(0);
@@ -182,7 +182,7 @@ public class TheSleepBarber extends Application {
 
     private VBox createInformationControlVBox() {
         int xProperty = 1100;
-        //int xProperty = 500;
+        // int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(217);
@@ -266,11 +266,12 @@ public class TheSleepBarber extends Application {
         button.cursorProperty().set(Cursor.HAND);
         button.styleProperty().set(
                 "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
-
+       
         button.onMouseEnteredProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
+
         button.onMouseExitedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
