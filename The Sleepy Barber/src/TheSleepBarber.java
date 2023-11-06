@@ -331,7 +331,7 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Thread.sleep(2000);
+                        Thread.sleep(5000);
 
                         if (Thread.currentThread().isInterrupted()) {
                             break;
