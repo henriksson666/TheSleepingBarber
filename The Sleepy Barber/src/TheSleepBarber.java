@@ -329,7 +329,7 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Thread.sleep(3000);
+                        Thread.sleep(2000);
 
                         if (Thread.currentThread().isInterrupted()) {
                             break;
@@ -429,7 +429,7 @@ class CustomerGenerator extends Thread {
 
                     shop.customer(customerId);
                     customerId++;
-                    int randomDelay = ThreadLocalRandom.current().nextInt(1, 7);
+                    int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
                     Thread.sleep(randomDelay * 1000);
 
                     if (Thread.currentThread().isInterrupted()) {
