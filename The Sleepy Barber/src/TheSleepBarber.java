@@ -242,6 +242,7 @@ public class TheSleepBarber extends Application {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
+        
         button.onMouseExitedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -251,6 +252,7 @@ public class TheSleepBarber extends Application {
             button.styleProperty().set(
                     "-fx-background-color: #318176; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
+        
         button.onMouseReleasedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -281,6 +283,7 @@ public class TheSleepBarber extends Application {
             button.styleProperty().set(
                     "-fx-background-color: #318176; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
+
         button.onMouseReleasedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -301,7 +304,6 @@ class BarberShop {
     private Text waitingRoomCustomers;
     private Text servedCustomers;
     private Text lostCustomers;
-
     private volatile boolean isRunning = true;
 
     public BarberShop(Text waitingRoomCustomers, Text servedCustomers, Text lostCustomers) {
