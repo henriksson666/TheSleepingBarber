@@ -242,7 +242,7 @@ public class TheSleepBarber extends Application {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
-        
+
         button.onMouseExitedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -252,7 +252,7 @@ public class TheSleepBarber extends Application {
             button.styleProperty().set(
                     "-fx-background-color: #318176; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
         });
-        
+
         button.onMouseReleasedProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -268,7 +268,7 @@ public class TheSleepBarber extends Application {
         button.cursorProperty().set(Cursor.HAND);
         button.styleProperty().set(
                 "-fx-background-color: #3aa198; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
-       
+
         button.onMouseEnteredProperty().set(event -> {
             button.styleProperty().set(
                     "-fx-background-color: #40afa5; -fx-border-width: 3px; -fx-border-color: #fdc88e; -fx-border-radius: 2px; -fx-background-radius: 2px; -fx-padding: 2px;  -fx-text-fill: #fff; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -357,9 +357,7 @@ class BarberShop {
             barbers.release();
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
-            Platform.runLater(() -> {
-                lostCustomers.setText("" + lostCustomersCount++);
-            });
+            lostCustomers.setText("" + lostCustomersCount++);
             mutex.release();
         }
     }
