@@ -149,8 +149,8 @@ public class TheSleepBarber extends Application {
     }
 
     private VBox createPermanentControlVBox() {
-        // int xProperty = 1100;
-        int xProperty = 500;
+        int xProperty = 1100;
+        //int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(0);
@@ -176,8 +176,8 @@ public class TheSleepBarber extends Application {
     }
 
     private VBox createInformationControlVBox() {
-        //int xProperty = 1100;
-        int xProperty = 500;
+        int xProperty = 1100;
+        //int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(217);
