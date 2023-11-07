@@ -19,7 +19,6 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -230,34 +229,12 @@ public class TheSleepBarber extends Application {
         slider.setStyle("-fx-tick-label-fill: #e74c3c;");
         slider.setStyle("-fx-font-size: 10px;");
         slider.setPrefHeight(5); */
-        slider.setStyle("-fx-background-color: -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-text-fill: red;");
-        //slider.setStyle("-fx-tick-label-fill: #e74c3c;");
+        //slider.setStyle("-fx-background-color: -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-text-fill: red;");
+        slider.setStyle("-fx-background-color: #3aa198; -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-tick-label-text-fill: red; -fx-track-color: green;");
         slider.cursorProperty().set(Cursor.HAND);
 
         return slider;
-    } 
-
-   /*  private Slider creatSlider(int min, int max, int value) {
-        Slider slider = new Slider(min, max, value);
-        slider.setShowTickLabels(true);
-        slider.setMajorTickUnit(1);
-        slider.setStyle("-fx-background-color: -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-text-fill: red;");
-        slider.cursorProperty().set(Cursor.HAND);
-
-        slider.getTickLabels().stream().forEach(label -> label.setStyle("-fx-text-fill: red;"));
-
-        slider.setThumb(new Thumb(new Shape() {
-            @Override
-            protected void fillShape(ShapeContext context) {
-                context.getGraphicsContext2D().setFill(Color.BLUE);
-                context.getGraphicsContext2D().fillOval(0, 0, 10, 10);
-            }
-        }));
-
-        slider.trackProperty().set(Background.fill(Color.GREEN));
-
-        return slider;
-    }*/
+    }
 
     private Button createResetButton(String string) {
         Button button = new Button();
