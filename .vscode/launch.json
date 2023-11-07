@@ -6,10 +6,19 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TheSleepingBarber",
+            "request": "launch",
+            "mainClass": "TheSleepingBarber",
+            "projectName": "TheSleepyBarber_3ed8119b",
+            "vmArgs": "--module-path \"C:/Program Files/Java/javafx-sdk-20.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
+        },
+        {
+            "type": "java",
             "name": "Prova",
             "request": "launch",
             "mainClass": "Prova",
-            "projectName": "TheSleepyBarber_3ed8119b"
+            "projectName": "TheSleepyBarber_3ed8119b",
+            "vmArgs": "--module-path \"C:/Program Files/Java/javafx-sdk-20.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
         },
         {
             "type": "java",
@@ -23,7 +32,7 @@
             "request": "launch",
             "mainClass": "TheSleepBarber",
             "projectName": "TheSleepyBarber_3ed8119b",
-            "vmArgs": "--module-path \"C:/Program Files/Java/javafx-sdk-20.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
+        
         }
     ]
 }
