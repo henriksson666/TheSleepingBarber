@@ -28,7 +28,7 @@ public class TheSleepingBarber extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
-        boolean[] isRandom = { false };
+        boolean[] isRandom = { true };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -51,7 +51,7 @@ public class TheSleepingBarber extends Application {
         Text barberSliderLabel = createText("Barber Speed: ");
         Text barberSpeed = new Text("" + (int) barberSlider.getValue());
         Text customerSliderLabel = createText("Customer Speed: ");
-        Text customerSpeed = new Text("" + (int) customerSlider.getValue());
+        Text customerSpeed = new Text(isRandom[0] ? "Random Speed" : "" + (int) customerSlider.getValue());
         Text waitingRoomCustomersLabel = createText("Waiting Room Customers: ");
         Text waitingRoomCustomers = new Text("0");
         Text barberStatusLabel = createText("Barber Status: ");
@@ -95,13 +95,17 @@ public class TheSleepingBarber extends Application {
                 barberShop.resumeThread();
                 customerGeneratorThread[0].resumeThread();
             }
+
             barberShop.setBarberSpeed((int) barberSlider.getValue());
-            if (!isRandom[0]){
-            customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
-            }else{
+
+            if (!isRandom[0]) {
+                customerGeneratorThread[0].setRandom(false);
+                customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
+            } else {
                 customerGeneratorThread[0].setRandom(true);
-                customerGeneratorThread[0].setCustomerSpeed(6);
+                customerGeneratorThread[0].setRandomCustomerSpeed(5);
             }
+
             barberThread[0].start();
             customerGeneratorThread[0].start();
             isReset[0] = true;
@@ -447,11 +451,11 @@ class CustomerGenerator extends Thread {
 
                     shop.customer(customerId);
                     customerId++;
-                    
-                    if(!isRandom){
+
+                    if (!isRandom) {
                         System.out.println("Customer generator at continuous speed.");
                         Thread.sleep(customerSpeed);
-                    }else {
+                    } else {
                         System.out.println("Customer generator at random speed.");
                         int randomDelay = ThreadLocalRandom.current().nextInt(1, randomCustomerSpeed);
                         Thread.sleep(randomDelay * 1000);
@@ -481,5 +485,9 @@ class CustomerGenerator extends Thread {
 
     public void setCustomerSpeed(int customerSpeed) {
         this.customerSpeed = customerSpeed * 1000;
+    }
+
+    public void setRandomCustomerSpeed(int randomCustomerSpeed) {
+        this.randomCustomerSpeed = randomCustomerSpeed;
     }
 }
