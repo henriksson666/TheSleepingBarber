@@ -137,7 +137,6 @@ public class TheSleepingBarber extends Application {
             barberShop.setBarberSpeed(newValue.intValue());
         });
 
-
         customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             customerSpeed.setText("" + newValue.intValue());
             customerGeneratorThread[0].setCustomerSpeed(newValue.intValue());
@@ -159,7 +158,7 @@ public class TheSleepingBarber extends Application {
 
     private VBox createPermanentControlVBox() {
         int xProperty = 1100;
-        //int xProperty = 500;
+        // int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(0);
@@ -223,7 +222,8 @@ public class TheSleepingBarber extends Application {
         Slider slider = new Slider(min, max, value);
         slider.setShowTickLabels(false);
         slider.setMajorTickUnit(1);
-        slider.setStyle("-fx-base: #5e9cff; -fx-track: green; -fx-control-inner-background: #041736; -fx-control-outer-background: #041736;");
+        slider.setStyle(
+                "-fx-base: #5e9cff; -fx-track: green; -fx-control-inner-background: #041736; -fx-control-outer-background: #041736;");
 
         slider.cursorProperty().set(Cursor.HAND);
 
@@ -371,7 +371,7 @@ class BarberShop {
         isRunning = true;
     }
 
-     public void setBarberSpeed(int barberSpeed) {
+    public void setBarberSpeed(int barberSpeed) {
         this.barberSpeed = barberSpeed * 1000;
     }
 
@@ -435,7 +435,6 @@ class CustomerGenerator extends Thread {
 
                     shop.customer(customerId);
                     customerId++;
-                    //int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
                     Thread.sleep(customerSpeed);
 
                     if (Thread.currentThread().isInterrupted()) {
@@ -461,11 +460,13 @@ class CustomerGenerator extends Thread {
     }
 }
 
-class CustomerGeneratorPaused extends Thread {
+class RandomCustomerGenerator extends Thread {
     private BarberShop shop;
     private int customerId = 1;
+    private volatile boolean isRunning = true;
+    private volatile int customerSpeed = 1;
 
-    public CustomerGeneratorPaused(BarberShop shop) {
+    public RandomCustomerGenerator(BarberShop shop) {
         this.shop = shop;
     }
 
@@ -473,17 +474,32 @@ class CustomerGeneratorPaused extends Thread {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                shop.customer(customerId);
-                customerId++;
-                int randomDelay = ThreadLocalRandom.current().nextInt(1, 5);
-                Thread.sleep(randomDelay * 100);
+                if(isRunning){
+                    shop.customer(customerId);
+                    customerId++;
+                    int randomDelay = ThreadLocalRandom.current().nextInt(1, customerSpeed);
+                    Thread.sleep(randomDelay * 100);
 
-                if (customerId == 20) {
-                    Thread.currentThread().interrupt();
+                    if (Thread.currentThread().isInterrupted()) {
+                        break;
+                    }
                 }
+
             }
         } catch (InterruptedException e) {
             System.out.println("Customer generator thread interrupted.");
         }
+    }
+
+    public void pauseThread() {
+        isRunning = false;
+    }
+
+    public void resumeThread() {
+        isRunning = true;
+    }
+
+    public void setCustomerSpeed(int customerSpeed) {
+        this.customerSpeed = customerSpeed * 1000;
     }
 }
