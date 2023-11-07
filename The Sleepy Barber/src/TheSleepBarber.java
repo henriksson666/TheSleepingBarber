@@ -51,23 +51,23 @@ public class TheSleepBarber extends Application {
         VBox informationControlVBox = createInformationControlVBox();
         Slider barberSlider = creatSlider(1, 10, 2);
         Slider customerSlider = creatSlider(1, 10, 2);
-        Text barberSliderText = createText("Barber Speed: ");
+        Text barberSliderLabel = createText("Barber Speed: ");
         Text barberSpeed = new Text("" + (int) barberSlider.getValue());
-        Text customerSliderText = createText("Customer Speed: ");
+        Text customerSliderLabel = createText("Customer Speed: ");
         Text customerSpeed = new Text("" + (int) customerSlider.getValue());
-        Text waitingRoomCustomersText = createText("Waiting Room Customers: ");
+        Text waitingRoomCustomersLabel = createText("Waiting Room Customers: ");
         Text waitingRoomCustomers = new Text("0");
-        Text barberStatusText = createText("Barber Status: ");
+        Text barberStatusLabel = createText("Barber Status: ");
         Text barberStatus = new Text("Inactive");
-        Text customerStatusText = createText("Customer Status: ");
+        Text customerStatusLabel = createText("Customer Status: ");
         Text customerStatus = new Text("Inactive");
-        Text servedCustomersText = createText("Served Customers: ");
+        Text servedCustomersLabel = createText("Served Customers: ");
         Text servedCustomers = new Text("0");
-        Text lostCustomersText = createText("Lost Customers: ");
+        Text lostCustomersLabel = createText("Lost Customers: ");
         Text lostCustomers = new Text("0");
-        informationControlVBox.getChildren().addAll(barberSliderText, barberSpeed, customerSliderText, customerSpeed,
-                waitingRoomCustomersText, waitingRoomCustomers, barberStatusText, barberStatus, customerStatusText,
-                customerStatus, servedCustomersText, servedCustomers, lostCustomersText, lostCustomers);
+        informationControlVBox.getChildren().addAll(barberSliderLabel, barberSpeed, customerSliderLabel, customerSpeed,
+                waitingRoomCustomersLabel, waitingRoomCustomers, barberStatusLabel, barberStatus, customerStatusLabel,
+                customerStatus, servedCustomersLabel, servedCustomers, lostCustomersLabel, lostCustomers);
 
         barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
         customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
