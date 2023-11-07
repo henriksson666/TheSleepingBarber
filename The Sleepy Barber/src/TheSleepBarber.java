@@ -220,17 +220,12 @@ public class TheSleepBarber extends Application {
 
     private Slider creatSlider(int min, int max, int value) {
         Slider slider = new Slider(min, max, value);
-        //int trackHeight = 5;
-        slider.setShowTickLabels(true);
+        slider.setShowTickLabels(false);
         slider.setMajorTickUnit(1);
-        /* String trackStyle = "-fx-control-inner-background: #3aa198; -fx-background-insets: " + (trackHeight / 2) + " 0 "
-                + (trackHeight / 2) + " 0;";
-        slider.setStyle(trackStyle);
-        slider.setStyle("-fx-tick-label-fill: #e74c3c;");
-        slider.setStyle("-fx-font-size: 10px;");
-        slider.setPrefHeight(5); */
-        //slider.setStyle("-fx-background-color: -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-text-fill: red;");
-        slider.setStyle("-fx-background-color: #3aa198; -fx-background-radius: 2px; -fx-padding: 2px; -fx-font-size: 10px; -fx-font-weight: bold; -fx-fill-text: white; -fx-border-width: 0px; -fx-border-radius: 2px; -fx-border-color: #3aa198; -fx-border-insets: 0px; -fx-border-style: none; -fx-tick-label-text-fill: red; -fx-track-color: green;");
+        slider.setStyle("-fx-control-inner-background: #5e9cff;");
+        slider.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-tick-label-text-fill: green;");
+        slider.setStyle("-fx-base: #041736; -fx-control-inner-background: #5e9cff; -fx-control-outer-background: #5e9cff;");
+
         slider.cursorProperty().set(Cursor.HAND);
 
         return slider;
