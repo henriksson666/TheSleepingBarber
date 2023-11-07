@@ -28,11 +28,11 @@ public class TheSleepingBarber extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
-        boolean[] isRandom = { true };
+        boolean[] isRandom = { false };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("The Sleepy Barber");
+        primaryStage.setTitle("The Sleeping Barber");
         primaryStage.setResizable(false);
         primaryStage.centerOnScreen();
         primaryStage.getIcons().add(new Image("icon.png"));
