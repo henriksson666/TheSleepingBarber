@@ -25,13 +25,10 @@ import javafx.stage.Stage;
 public class TheSleepingBarber extends Application {
     public static final int CHAIRS = 5;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
+        boolean[] isRandom = { false };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -99,7 +96,12 @@ public class TheSleepingBarber extends Application {
                 customerGeneratorThread[0].resumeThread();
             }
             barberShop.setBarberSpeed((int) barberSlider.getValue());
+            if (!isRandom[0]){
             customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
+            }else{
+                customerGeneratorThread[0].setRandom(true);
+                customerGeneratorThread[0].setCustomerSpeed(6);
+            }
             barberThread[0].start();
             customerGeneratorThread[0].start();
             isReset[0] = true;
@@ -137,10 +139,18 @@ public class TheSleepingBarber extends Application {
             barberShop.setBarberSpeed(newValue.intValue());
         });
 
+        if (isRandom[0]) {
+            customerSlider.setDisable(true);
+        }
+
         customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             customerSpeed.setText("" + newValue.intValue());
             customerGeneratorThread[0].setCustomerSpeed(newValue.intValue());
         });
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private Pane createPane() {
@@ -421,7 +431,9 @@ class CustomerGenerator extends Thread {
     private BarberShop shop;
     private int customerId = 1;
     private volatile boolean isRunning = true;
+    private volatile boolean isRandom = false;
     private volatile int customerSpeed;
+    private volatile int randomCustomerSpeed = 2;
 
     public CustomerGenerator(BarberShop shop) {
         this.shop = shop;
@@ -435,7 +447,15 @@ class CustomerGenerator extends Thread {
 
                     shop.customer(customerId);
                     customerId++;
-                    Thread.sleep(customerSpeed);
+                    
+                    if(!isRandom){
+                        System.out.println("Customer generator at continuous speed.");
+                        Thread.sleep(customerSpeed);
+                    }else {
+                        System.out.println("Customer generator at random speed.");
+                        int randomDelay = ThreadLocalRandom.current().nextInt(1, randomCustomerSpeed);
+                        Thread.sleep(randomDelay * 1000);
+                    }
 
                     if (Thread.currentThread().isInterrupted()) {
                         break;
@@ -455,48 +475,8 @@ class CustomerGenerator extends Thread {
         isRunning = true;
     }
 
-    public void setCustomerSpeed(int customerSpeed) {
-        this.customerSpeed = customerSpeed * 1000;
-    }
-}
-
-class RandomCustomerGenerator extends Thread {
-    private BarberShop shop;
-    private int customerId = 1;
-    private volatile boolean isRunning = true;
-    private volatile int customerSpeed = 1;
-
-    public RandomCustomerGenerator(BarberShop shop) {
-        this.shop = shop;
-    }
-
-    @Override
-    public void run() {
-        try {
-            while (!Thread.currentThread().isInterrupted()) {
-                if(isRunning){
-                    shop.customer(customerId);
-                    customerId++;
-                    int randomDelay = ThreadLocalRandom.current().nextInt(1, customerSpeed);
-                    Thread.sleep(randomDelay * 100);
-
-                    if (Thread.currentThread().isInterrupted()) {
-                        break;
-                    }
-                }
-
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Customer generator thread interrupted.");
-        }
-    }
-
-    public void pauseThread() {
-        isRunning = false;
-    }
-
-    public void resumeThread() {
-        isRunning = true;
+    public void setRandom(boolean isRandom) {
+        this.isRandom = isRandom;
     }
 
     public void setCustomerSpeed(int customerSpeed) {
