@@ -98,7 +98,8 @@ public class TheSleepBarber extends Application {
                 barberShop.resumeThread();
                 customerGeneratorThread[0].resumeThread();
             }
-
+            barberShop.setBarberSpeed((int) barberSlider.getValue());
+            customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
             barberThread[0].start();
             customerGeneratorThread[0].start();
             isReset[0] = true;
@@ -133,10 +134,12 @@ public class TheSleepBarber extends Application {
 
         barberSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             barberSpeed.setText("" + newValue.intValue());
+            barberShop.setBarberSpeed(newValue.intValue());
         });
 
         customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             customerSpeed.setText("" + newValue.intValue());
+            customerGeneratorThread[0].setCustomerSpeed(newValue.intValue());
         });
     }
 
@@ -301,6 +304,7 @@ class BarberShop {
     private Queue<Integer> waitingCustomers = new LinkedList<>();
     private int servedCustomersCount = 1;
     private int lostCustomersCount = 1;
+    private volatile int barberSpeed;
     private Text waitingRoomCustomers;
     private Text servedCustomers;
     private Text lostCustomers;
@@ -331,7 +335,7 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Thread.sleep(5000);
+                        Thread.sleep(barberSpeed);
 
                         if (Thread.currentThread().isInterrupted()) {
                             break;
@@ -368,6 +372,10 @@ class BarberShop {
 
     public void resumeThread() {
         isRunning = true;
+    }
+
+     public void setBarberSpeed(int barberSpeed) {
+        this.barberSpeed = barberSpeed * 1000;
     }
 
     public void updateWaitingRoomCustomersText(int value) {
@@ -416,6 +424,7 @@ class CustomerGenerator extends Thread {
     private BarberShop shop;
     private int customerId = 1;
     private volatile boolean isRunning = true;
+    private volatile int customerSpeed;
 
     public CustomerGenerator(BarberShop shop) {
         this.shop = shop;
@@ -429,8 +438,8 @@ class CustomerGenerator extends Thread {
 
                     shop.customer(customerId);
                     customerId++;
-                    int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
-                    Thread.sleep(randomDelay * 1000);
+                    //int randomDelay = ThreadLocalRandom.current().nextInt(1, 3);
+                    Thread.sleep(customerSpeed);
 
                     if (Thread.currentThread().isInterrupted()) {
                         break;
@@ -448,6 +457,10 @@ class CustomerGenerator extends Thread {
 
     public void resumeThread() {
         isRunning = true;
+    }
+
+    public void setCustomerSpeed(int customerSpeed) {
+        this.customerSpeed = customerSpeed * 1000;
     }
 }
 
