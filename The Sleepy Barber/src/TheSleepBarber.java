@@ -137,6 +137,7 @@ public class TheSleepBarber extends Application {
             barberShop.setBarberSpeed(newValue.intValue());
         });
 
+
         customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             customerSpeed.setText("" + newValue.intValue());
             customerGeneratorThread[0].setCustomerSpeed(newValue.intValue());
@@ -219,15 +220,17 @@ public class TheSleepBarber extends Application {
 
     private Slider creatSlider(int min, int max, int value) {
         Slider slider = new Slider(min, max, value);
-        int trackHeight = 5;
+        //int trackHeight = 5;
         slider.setShowTickLabels(true);
         slider.setMajorTickUnit(1);
-        String trackStyle = "-fx-control-inner-background: #3aa198; -fx-background-insets: " + (trackHeight / 2) + " 0 "
+        /* String trackStyle = "-fx-control-inner-background: #3aa198; -fx-background-insets: " + (trackHeight / 2) + " 0 "
                 + (trackHeight / 2) + " 0;";
         slider.setStyle(trackStyle);
         slider.setStyle("-fx-tick-label-fill: #e74c3c;");
         slider.setStyle("-fx-font-size: 10px;");
-        slider.setPrefHeight(5);
+        slider.setPrefHeight(5); */
+        slider.setStyle("-fx-background-color, linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border), linear-gradient(to bottom, derive(-fx-control-inner-background, -9%), derive(-fx-control-inner-background, 0%), derive(-fx-control-inner-background, -5%), derive(-fx-control-inner-background, -12%); -fx-background-insets: 0 0 -1, 0, 1; -fx-background-radius: 0.25em, 0.25em, 0.166667em; -fx-padding: 0.25em;)");
+        
         slider.cursorProperty().set(Cursor.HAND);
 
         return slider;
