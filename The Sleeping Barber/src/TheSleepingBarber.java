@@ -207,7 +207,7 @@ public class TheSleepingBarber extends Application {
         vBox.setStyle(
                 "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 10; -fx-alignment: center;");
 
-        DropShadow shadow = new DropShadow();
+        DropShadow shadow = new DropShadow(); 
         shadow.setRadius(10.0);
         shadow.setOffsetX(-1.0);
         shadow.setOffsetY(0);
@@ -215,7 +215,7 @@ public class TheSleepingBarber extends Application {
         vBox.setEffect(shadow);
 
         return vBox;
-    }
+    } // createInformationControlVBox
 
     private VBox createControlVBox(String string) {
         VBox vBox = new VBox();
