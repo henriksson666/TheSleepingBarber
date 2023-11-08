@@ -28,7 +28,7 @@ public class TheSleepingBarber extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
-        boolean[] isRandom = { false };
+        boolean[] isRandom = { true };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
