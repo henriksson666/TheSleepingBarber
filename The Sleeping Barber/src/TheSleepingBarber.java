@@ -109,6 +109,7 @@ public class TheSleepingBarber extends Application {
                 customerSlider.setDisable(false);
                 randomButton.setDisable(true);
                 randomTextField.setDisable(true);
+                customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
                 customerGeneratorThread[0].setRandom(false);
             }
         });
@@ -236,6 +237,15 @@ public class TheSleepingBarber extends Application {
             barberImageView.translateXProperty().set(190);
             barberImageView.translateYProperty().set(350);
         }
+    }
+
+    public void updateCustomer(ImageView customerImageView) {
+        customerImageView.setImage(new Image("customer.png"));
+        customerImageView.setFitWidth(290);
+        customerImageView.setFitHeight(290);
+        customerImageView.translateXProperty().set(1000);
+        customerImageView.translateYProperty().set(345);
+
     }
 
     private VBox createPermanentControlVBox() {
@@ -390,10 +400,10 @@ public class TheSleepingBarber extends Application {
         ImageView imageView = new ImageView();
         imageView.setImage(new Image("customer.png"));
         imageView.setPreserveRatio(true);
-        imageView.setFitWidth(250);
-        imageView.setFitHeight(250);
-        imageView.translateXProperty().set(800);
-        imageView.translateYProperty().set(389);
+        imageView.setFitWidth(290);
+        imageView.setFitHeight(290);
+        imageView.translateXProperty().set(1000);
+        imageView.translateYProperty().set(345);
 
         return imageView;
     }
@@ -532,14 +542,16 @@ class Barber extends Thread {
 
 class CustomerGenerator extends Thread {
     private BarberShop shop;
+    private TheSleepingBarber sleepingBarber;
     private int customerId = 1;
     private volatile boolean isRunning = true;
     private volatile boolean isRandom = false;
     private volatile int customerSpeed = 1;
     private volatile int randomCustomerSpeed = 2;
 
-    public CustomerGenerator(BarberShop shop) {
+    public CustomerGenerator(BarberShop shop, TheSleepingBarber sleepingBarber) {
         this.shop = shop;
+        this.sleepingBarber = sleepingBarber;
     }
 
     @Override
