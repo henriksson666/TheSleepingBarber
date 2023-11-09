@@ -33,7 +33,7 @@ import javafx.util.Duration;
 
 public class TheSleepingBarber extends Application {
     public static final int CHAIRS = 5;
-    Pane root;
+    public static Pane root;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -250,25 +250,27 @@ public class TheSleepingBarber extends Application {
 
     } */
 
-    public void animateCustomerEntering(int customerId) {
+    public static void animateCustomerEntering(int customerId) {
         ImageView customerImageView = new ImageView(new Image("customer.png"));
+        customerImageView.setPreserveRatio(true);
         customerImageView.setFitWidth(290);
         customerImageView.setFitHeight(290);
-        customerImageView.setTranslateX(1000);
+        customerImageView.setTranslateX(1300);
         customerImageView.setTranslateY(345);
 
         root.getChildren().add(customerImageView);
 
-        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1), customerImageView);
-        enteringTransition.setToX(1000);
-        enteringTransition.setToY(250);
+        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+        enteringTransition.setToX(850);
+        enteringTransition.setToY(345);
         enteringTransition.play();
     }
 
-    public void animateCustomerLeaving(ImageView customerImageView) {
-        TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1), customerImageView);
-        leavingTransition.setToX(250);
-        leavingTransition.setToY(1000);
+    public static void animateCustomerLeaving(ImageView customerImageView) {
+        customerImageView.setPreserveRatio(true);
+        TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+        leavingTransition.setToX(1000);
+        leavingTransition.setToY(345);
         leavingTransition.setOnFinished(event -> {
             root.getChildren().remove(customerImageView);
         });
@@ -478,6 +480,9 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
+                        Platform.runLater(() -> {
+                            TheSleepingBarber.animateCustomerLeaving();
+                        });
                         Thread.sleep(barberSpeed);
 
                         if (Thread.currentThread().isInterrupted()) {
@@ -569,7 +574,6 @@ class Barber extends Thread {
 
 class CustomerGenerator extends Thread {
     private BarberShop shop;
-    private TheSleepingBarber sleepingBarber;
     private int customerId = 1;
     private volatile boolean isRunning = true;
     private volatile boolean isRandom = false;
@@ -587,7 +591,7 @@ class CustomerGenerator extends Thread {
                 if (isRunning) {
 
                     Platform.runLater(() -> {
-                        sleepingBarber.animateCustomerEntering(customerId);
+                        TheSleepingBarber.animateCustomerEntering(customerId);
                     });
 
                     shop.customer(customerId);
