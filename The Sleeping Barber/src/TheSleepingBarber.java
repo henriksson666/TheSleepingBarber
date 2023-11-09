@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,8 +91,8 @@ public class TheSleepingBarber extends Application {
         permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox, randomChoice);
 
         ImageView barberImageView = createBarberView();
-        ImageView customerImageView = createCustomerImageView();
-        root.getChildren().addAll(informationControlVBox, customerImageView, barberImageView);
+        //ImageView customerImageView = createCustomerImageView();
+        root.getChildren().addAll(informationControlVBox, barberImageView);
 
         BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
         Barber[] barberThread = { new Barber(barberShop) };
@@ -255,15 +257,22 @@ public class TheSleepingBarber extends Application {
         customerImageView.setPreserveRatio(true);
         customerImageView.setFitWidth(290);
         customerImageView.setFitHeight(290);
-        customerImageView.setTranslateX(1300);
+        customerImageView.setTranslateX(1100);
         customerImageView.setTranslateY(345);
-
+        BarberShop.setWaitingCustomersImageView(customerImageView);
         root.getChildren().add(customerImageView);
 
         TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
-        enteringTransition.setToX(850);
+        enteringTransition.setToX(825);
         enteringTransition.setToY(345);
         enteringTransition.play();
+        enteringTransition.setOnFinished(event -> {
+            customerImageView.setImage(new Image("customersitting.png"));
+            customerImageView.setFitWidth(230);
+            customerImageView.setFitHeight(250);
+            customerImageView.setPreserveRatio(true);
+        });
+        //customerImageView.setImage(new Image("customersitting.png"));
     }
 
     public static void animateCustomerLeaving(ImageView customerImageView) {
@@ -425,7 +434,7 @@ public class TheSleepingBarber extends Application {
         return imageView;
     }
 
-    private ImageView createCustomerImageView() {
+    /* private ImageView createCustomerImageView() {
         ImageView imageView = new ImageView();
         imageView.setImage(new Image("customer.png"));
         imageView.setPreserveRatio(true);
@@ -435,7 +444,7 @@ public class TheSleepingBarber extends Application {
         imageView.translateYProperty().set(345);
 
         return imageView;
-    }
+    } */
 }
 
 class BarberShop {
@@ -444,6 +453,7 @@ class BarberShop {
     private Semaphore mutex = new Semaphore(1);
     private Semaphore barbers = new Semaphore(0);
     private Queue<Integer> waitingCustomers = new LinkedList<>();
+    private static List<ImageView> waitingCustomersImageView = new ArrayList<>();
     private int servedCustomersCount = 1;
     private int lostCustomersCount = 1;
     private volatile int barberSpeed;
@@ -480,9 +490,9 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Platform.runLater(() -> {
-                            TheSleepingBarber.animateCustomerLeaving();
-                        });
+                        /* Platform.runLater(() -> {
+                            TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                        }); */
                         Thread.sleep(barberSpeed);
 
                         if (Thread.currentThread().isInterrupted()) {
@@ -498,6 +508,7 @@ class BarberShop {
 
     public void customer(int id) throws InterruptedException {
         System.out.println("Customer " + id + " is entering the shop.");
+        //TheSleepingBarber.animateCustomerEntering(id);
 
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepingBarber.CHAIRS) {
@@ -528,6 +539,14 @@ class BarberShop {
 
     public void setBarberSpeed(int barberSpeed) {
         this.barberSpeed = barberSpeed * 1000;
+    }
+
+    public ImageView getWaitingCustomersImageView() {
+        return waitingCustomersImageView.remove(0);
+    }
+
+    public static void setWaitingCustomersImageView(ImageView customersImageView) {
+        waitingCustomersImageView.add(customersImageView);
     }
 
     public void updateWaitingRoomCustomersText(int value) {
