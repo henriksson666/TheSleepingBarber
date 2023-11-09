@@ -261,10 +261,16 @@ public class TheSleepingBarber extends Application {
         customerImageView.setTranslateY(345);
         BarberShop.setWaitingCustomersImageView(customerImageView);
         root.getChildren().add(customerImageView);
-
+        
         TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
-        enteringTransition.setToX(825);
-        enteringTransition.setToY(345);
+        if (BarberShop.isSleeping() == false) {
+            enteringTransition.setToX(825);
+            enteringTransition.setToY(345);
+        }else {
+            enteringTransition.setToX(190);
+            enteringTransition.setToY(350);
+        }
+
         enteringTransition.play();
         enteringTransition.setOnFinished(event -> {
             customerImageView.setImage(new Image("customersitting.png"));
@@ -272,7 +278,7 @@ public class TheSleepingBarber extends Application {
             customerImageView.setFitHeight(250);
             customerImageView.setPreserveRatio(true);
         });
-        //customerImageView.setImage(new Image("customersitting.png"));
+        
     }
 
     public static void animateCustomerLeaving(ImageView customerImageView) {
@@ -287,8 +293,8 @@ public class TheSleepingBarber extends Application {
     }
 
     private VBox createPermanentControlVBox() {
-        int xProperty = 1100;
-        // int xProperty = 500;
+        //int xProperty = 1100;
+        int xProperty = 50;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
         vBox.translateYProperty().set(0);
@@ -490,9 +496,9 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        /* Platform.runLater(() -> {
+                        Platform.runLater(() -> {
                             TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
-                        }); */
+                        }); 
                         Thread.sleep(barberSpeed);
 
                         if (Thread.currentThread().isInterrupted()) {
@@ -508,7 +514,10 @@ class BarberShop {
 
     public void customer(int id) throws InterruptedException {
         System.out.println("Customer " + id + " is entering the shop.");
-        //TheSleepingBarber.animateCustomerEntering(id);
+        
+        Platform.runLater(() -> {
+            TheSleepingBarber.animateCustomerEntering(id);
+        });
 
         mutex.acquire();
         if (waitingCustomers.size() < TheSleepingBarber.CHAIRS) {
@@ -609,9 +618,9 @@ class CustomerGenerator extends Thread {
             while (!Thread.currentThread().isInterrupted()) {
                 if (isRunning) {
 
-                    Platform.runLater(() -> {
+                    /* Platform.runLater(() -> {
                         TheSleepingBarber.animateCustomerEntering(customerId);
-                    });
+                    }); */
 
                     shop.customer(customerId);
                     customerId++;
