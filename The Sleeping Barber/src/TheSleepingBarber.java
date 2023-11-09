@@ -101,6 +101,7 @@ public class TheSleepingBarber extends Application {
                 customerSlider.setDisable(false);
                 randomButton.setDisable(true);
                 randomTextField.setDisable(true);
+                customerGeneratorThread[0].setRandom(false);
             }
         });
 
@@ -145,7 +146,8 @@ public class TheSleepingBarber extends Application {
             if (randomTextField.getText().isEmpty()) {
                 randomTextField.setText("2");
             }
-            customerGeneratorThread[0].setRandomCustomerSpeed(Integer.parseInt(randomTextField.getText()));
+            customerGeneratorThread[0].setRandom(true);
+            customerGeneratorThread[0].setRandomCustomerSpeed(randomTextField.getText().equals("1") ? Integer.parseInt(randomTextField.getText()) + 1 : Integer.parseInt(randomTextField.getText()));
         });
 
         togglePlayPauseBarber.setOnAction(event -> {
