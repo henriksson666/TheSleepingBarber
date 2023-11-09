@@ -5,10 +5,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -16,6 +19,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -28,7 +32,7 @@ public class TheSleepingBarber extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
-        boolean[] isRandom = { true };
+        boolean[] isRandom = { false };
         Pane root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -46,6 +50,14 @@ public class TheSleepingBarber extends Application {
         VBox barberControlVBox = createControlVBox("Barber");
         VBox customerControlVBox = createControlVBox("Customer");
         VBox informationControlVBox = createInformationControlVBox();
+        HBox randomChoice = new HBox();
+        randomChoice.setSpacing(5);
+        randomChoice.setAlignment(Pos.CENTER);
+        CheckBox randomCheckBox = new CheckBox("Random");
+        TextField randomTextField = new TextField();
+        randomTextField.setPrefSize(50, 20);
+        Button randomButton = new Button("Apply");
+        randomChoice.getChildren().addAll(randomCheckBox, randomTextField, randomButton);
         Slider barberSlider = creatSlider(1, 10, 2);
         Slider customerSlider = creatSlider(1, 10, 2);
         Text barberSliderLabel = createText("Barber Speed: ");
@@ -68,12 +80,29 @@ public class TheSleepingBarber extends Application {
 
         barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
         customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
-        permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox);
+        permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox, randomChoice);
         root.getChildren().add(informationControlVBox);
 
         BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
         Barber[] barberThread = { new Barber(barberShop) };
         CustomerGenerator[] customerGeneratorThread = { new CustomerGenerator(barberShop) };
+
+        randomTextField.setDisable(true);
+        randomButton.setDisable(true);
+
+        randomCheckBox.setOnAction(event -> {
+            if (randomCheckBox.isSelected()) {
+                isRandom[0] = true;
+                customerSlider.setDisable(true);
+                randomTextField.setDisable(false);
+                randomButton.setDisable(false);
+            } else {
+                isRandom[0] = false;
+                customerSlider.setDisable(false);
+                randomButton.setDisable(true);
+                randomTextField.setDisable(true);
+            }
+        });
 
         resetButton.setOnAction(event -> {
             resetButton.setText("Reset");
@@ -103,12 +132,20 @@ public class TheSleepingBarber extends Application {
                 customerGeneratorThread[0].setCustomerSpeed((int) customerSlider.getValue());
             } else {
                 customerGeneratorThread[0].setRandom(true);
-                customerGeneratorThread[0].setRandomCustomerSpeed(5);
+                customerGeneratorThread[0].setRandomCustomerSpeed(Integer.parseInt(randomTextField.getText()));
             }
+
 
             barberThread[0].start();
             customerGeneratorThread[0].start();
             isReset[0] = true;
+        });
+
+        randomButton.setOnAction(event -> {
+            if (randomTextField.getText().isEmpty()) {
+                randomTextField.setText("2");
+            }
+            customerGeneratorThread[0].setRandomCustomerSpeed(Integer.parseInt(randomTextField.getText()));
         });
 
         togglePlayPauseBarber.setOnAction(event -> {
@@ -142,10 +179,6 @@ public class TheSleepingBarber extends Application {
             barberSpeed.setText("" + newValue.intValue());
             barberShop.setBarberSpeed(newValue.intValue());
         });
-
-        if (isRandom[0]) {
-            customerSlider.setDisable(true);
-        }
 
         customerSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             customerSpeed.setText("" + newValue.intValue());
@@ -202,8 +235,8 @@ public class TheSleepingBarber extends Application {
         // int xProperty = 500;
         VBox vBox = new VBox();
         vBox.translateXProperty().set(xProperty);
-        vBox.translateYProperty().set(217);
-        vBox.setPrefSize(200, 433);
+        vBox.translateYProperty().set(250);
+        vBox.setPrefSize(200, 400);
         vBox.setStyle(
                 "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 10; -fx-alignment: center;");
 
