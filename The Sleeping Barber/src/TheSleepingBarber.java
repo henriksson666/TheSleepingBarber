@@ -87,7 +87,8 @@ public class TheSleepingBarber extends Application {
         permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox, randomChoice);
 
         ImageView barberImageView = createBarberView();
-        root.getChildren().addAll(informationControlVBox, barberImageView);
+        ImageView customerImageView = createCustomerImageView();
+        root.getChildren().addAll(informationControlVBox, customerImageView, barberImageView);
 
         BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
         Barber[] barberThread = { new Barber(barberShop) };
@@ -380,6 +381,18 @@ public class TheSleepingBarber extends Application {
         imageView.setFitWidth(250);
         imageView.setFitHeight(250);
         imageView.translateXProperty().set(250);
+        imageView.translateYProperty().set(389);
+
+        return imageView;
+    }
+
+    private ImageView createCustomerImageView() {
+        ImageView imageView = new ImageView();
+        imageView.setImage(new Image("customer.png"));
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(250);
+        imageView.setFitHeight(250);
+        imageView.translateXProperty().set(800);
         imageView.translateYProperty().set(389);
 
         return imageView;
