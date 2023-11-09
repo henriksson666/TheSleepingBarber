@@ -3,6 +3,8 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -14,6 +16,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -25,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class TheSleepingBarber extends Application {
     public static final int CHAIRS = 5;
@@ -63,7 +67,7 @@ public class TheSleepingBarber extends Application {
         Text barberSliderLabel = createText("Barber Speed: ");
         Text barberSpeed = new Text("" + (int) barberSlider.getValue());
         Text customerSliderLabel = createText("Customer Speed: ");
-        Text customerSpeed = new Text(isRandom[0] ? "Random Speed" : "" + (int) customerSlider.getValue());
+        Text customerSpeed = new Text("" + (int) customerSlider.getValue());
         Text waitingRoomCustomersLabel = createText("Waiting Room Customers: ");
         Text waitingRoomCustomers = new Text("0");
         Text barberStatusLabel = createText("Barber Status: ");
@@ -81,7 +85,9 @@ public class TheSleepingBarber extends Application {
         barberControlVBox.getChildren().addAll(barberSlider, togglePlayPauseBarber);
         customerControlVBox.getChildren().addAll(customerSlider, togglePlayPauseCustomer);
         permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox, randomChoice);
-        root.getChildren().add(informationControlVBox);
+
+        ImageView barberImageView = createBarberView();
+        root.getChildren().addAll(informationControlVBox, barberImageView);
 
         BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
         Barber[] barberThread = { new Barber(barberShop) };
@@ -96,6 +102,7 @@ public class TheSleepingBarber extends Application {
                 customerSlider.setDisable(true);
                 randomTextField.setDisable(false);
                 randomButton.setDisable(false);
+                customerGeneratorThread[0].setRandom(true);
             } else {
                 isRandom[0] = false;
                 customerSlider.setDisable(false);
@@ -136,7 +143,6 @@ public class TheSleepingBarber extends Application {
                 customerGeneratorThread[0].setRandomCustomerSpeed(Integer.parseInt(randomTextField.getText()));
             }
 
-
             barberThread[0].start();
             customerGeneratorThread[0].start();
             isReset[0] = true;
@@ -147,7 +153,10 @@ public class TheSleepingBarber extends Application {
                 randomTextField.setText("2");
             }
             customerGeneratorThread[0].setRandom(true);
-            customerGeneratorThread[0].setRandomCustomerSpeed(randomTextField.getText().equals("1") ? Integer.parseInt(randomTextField.getText()) + 1 : Integer.parseInt(randomTextField.getText()));
+            customerGeneratorThread[0].setRandomCustomerSpeed(
+                    randomTextField.getText().equals("1") ? Integer.parseInt(randomTextField.getText()) + 1
+                            : Integer.parseInt(randomTextField.getText()));
+            customerSpeed.setText("Random between 1 and " + (Integer.parseInt(randomTextField.getText()) + 1));
         });
 
         togglePlayPauseBarber.setOnAction(event -> {
@@ -186,6 +195,13 @@ public class TheSleepingBarber extends Application {
             customerSpeed.setText("" + newValue.intValue());
             customerGeneratorThread[0].setCustomerSpeed(newValue.intValue());
         });
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+            updateBarberImage(barberImageView);
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     public static void main(String[] args) {
@@ -203,6 +219,22 @@ public class TheSleepingBarber extends Application {
         pane.setBackground(new Background(background));
 
         return pane;
+    }
+
+    private static void updateBarberImage(ImageView barberImageView) {
+        if (BarberShop.isSleeping()) {
+            barberImageView.setImage(new Image("sleepingbarber.png"));
+            barberImageView.setFitWidth(270);
+            barberImageView.setFitHeight(270);
+            barberImageView.translateXProperty().set(250);
+            barberImageView.translateYProperty().set(389);
+        } else {
+            barberImageView.setImage(new Image("activebarber.png"));
+            barberImageView.setFitWidth(270);
+            barberImageView.setFitHeight(270);
+            barberImageView.translateXProperty().set(190);
+            barberImageView.translateYProperty().set(350);
+        }
     }
 
     private VBox createPermanentControlVBox() {
@@ -242,7 +274,7 @@ public class TheSleepingBarber extends Application {
         vBox.setStyle(
                 "-fx-background-color: radial-gradient(radius 180%, #f99832, #fdc88e, #fdc88e); -fx-padding: 5px; -fx-spacing: 10; -fx-alignment: center;");
 
-        DropShadow shadow = new DropShadow(); 
+        DropShadow shadow = new DropShadow();
         shadow.setRadius(10.0);
         shadow.setOffsetX(-1.0);
         shadow.setOffsetY(0);
@@ -340,6 +372,18 @@ public class TheSleepingBarber extends Application {
 
         return button;
     }
+
+    private ImageView createBarberView() {
+        ImageView imageView = new ImageView();
+        imageView.setImage(new Image("sleepingbarber.png"));
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(250);
+        imageView.setFitHeight(250);
+        imageView.translateXProperty().set(250);
+        imageView.translateYProperty().set(389);
+
+        return imageView;
+    }
 }
 
 class BarberShop {
@@ -355,6 +399,7 @@ class BarberShop {
     private Text servedCustomers;
     private Text lostCustomers;
     private volatile boolean isRunning = true;
+    private static volatile boolean isSleeping = true;
 
     public BarberShop(Text waitingRoomCustomers, Text servedCustomers, Text lostCustomers) {
         this.waitingRoomCustomers = waitingRoomCustomers;
@@ -370,9 +415,11 @@ class BarberShop {
                     mutex.acquire();
                     if (waitingCustomers.isEmpty()) {
                         System.out.println("Barber is sleeping.");
+                        isSleeping = true;
                         mutex.release();
                         customers.acquire();
                     } else {
+                        isSleeping = false;
                         int customerId = waitingCustomers.poll();
                         waitingRoomCustomers.setText("" + waitingCustomers.size());
                         servedCustomers.setText("" + servedCustomersCount++);
@@ -410,6 +457,10 @@ class BarberShop {
             lostCustomers.setText("" + lostCustomersCount++);
             mutex.release();
         }
+    }
+
+    public static boolean isSleeping() {
+        return isSleeping;
     }
 
     public void pauseThread() {
@@ -471,7 +522,7 @@ class CustomerGenerator extends Thread {
     private int customerId = 1;
     private volatile boolean isRunning = true;
     private volatile boolean isRandom = false;
-    private volatile int customerSpeed;
+    private volatile int customerSpeed = 1;
     private volatile int randomCustomerSpeed = 2;
 
     public CustomerGenerator(BarberShop shop) {
