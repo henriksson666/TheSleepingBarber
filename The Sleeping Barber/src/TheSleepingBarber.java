@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -32,12 +33,13 @@ import javafx.util.Duration;
 
 public class TheSleepingBarber extends Application {
     public static final int CHAIRS = 5;
+    Pane root;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         boolean[] isReset = { false };
         boolean[] isRandom = { false };
-        Pane root = createPane();
+        root = createPane();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("The Sleeping Barber");
@@ -239,13 +241,38 @@ public class TheSleepingBarber extends Application {
         }
     }
 
-    public void updateCustomer(ImageView customerImageView) {
+    /* public void updateCustomer(ImageView customerImageView) {
         customerImageView.setImage(new Image("customer.png"));
         customerImageView.setFitWidth(290);
         customerImageView.setFitHeight(290);
         customerImageView.translateXProperty().set(1000);
         customerImageView.translateYProperty().set(345);
 
+    } */
+
+    public void animateCustomerEntering(int customerId) {
+        ImageView customerImageView = new ImageView(new Image("customer.png"));
+        customerImageView.setFitWidth(290);
+        customerImageView.setFitHeight(290);
+        customerImageView.setTranslateX(1000);
+        customerImageView.setTranslateY(345);
+
+        root.getChildren().add(customerImageView);
+
+        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1), customerImageView);
+        enteringTransition.setToX(1000);
+        enteringTransition.setToY(250);
+        enteringTransition.play();
+    }
+
+    public void animateCustomerLeaving(ImageView customerImageView) {
+        TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1), customerImageView);
+        leavingTransition.setToX(250);
+        leavingTransition.setToY(1000);
+        leavingTransition.setOnFinished(event -> {
+            root.getChildren().remove(customerImageView);
+        });
+        leavingTransition.play();
     }
 
     private VBox createPermanentControlVBox() {
@@ -549,9 +576,8 @@ class CustomerGenerator extends Thread {
     private volatile int customerSpeed = 1;
     private volatile int randomCustomerSpeed = 2;
 
-    public CustomerGenerator(BarberShop shop, TheSleepingBarber sleepingBarber) {
+    public CustomerGenerator(BarberShop shop) {
         this.shop = shop;
-        this.sleepingBarber = sleepingBarber;
     }
 
     @Override
@@ -559,6 +585,10 @@ class CustomerGenerator extends Thread {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 if (isRunning) {
+
+                    Platform.runLater(() -> {
+                        sleepingBarber.animateCustomerEntering(customerId);
+                    });
 
                     shop.customer(customerId);
                     customerId++;
