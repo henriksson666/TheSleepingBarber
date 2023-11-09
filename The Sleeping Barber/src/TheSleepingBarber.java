@@ -263,6 +263,7 @@ public class TheSleepingBarber extends Application {
         root.getChildren().add(customerImageView);
         
         TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+
         if (BarberShop.isSleeping() == false) {
             enteringTransition.setToX(825);
             enteringTransition.setToY(345);
@@ -283,6 +284,7 @@ public class TheSleepingBarber extends Application {
 
     public static void animateCustomerLeaving(ImageView customerImageView) {
         customerImageView.setPreserveRatio(true);
+        customerImageView.setImage(new Image("customer.png"));
         TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
         leavingTransition.setToX(1000);
         leavingTransition.setToY(345);
@@ -530,6 +532,9 @@ class BarberShop {
         } else {
             System.out.println("Customer " + id + " is leaving because the shop is full.");
             lostCustomers.setText("" + lostCustomersCount++);
+            Platform.runLater(() -> {
+                TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+            });
             mutex.release();
         }
     }
