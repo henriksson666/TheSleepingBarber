@@ -264,7 +264,7 @@ public class TheSleepingBarber extends Application {
         
         TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
 
-        if (BarberShop.isSleeping() == false) {
+        if (BarberShop.isSleeping()) {
             enteringTransition.setToX(825);
             enteringTransition.setToY(345);
         }else {
@@ -273,6 +273,7 @@ public class TheSleepingBarber extends Application {
         }
 
         enteringTransition.play();
+        
         enteringTransition.setOnFinished(event -> {
             customerImageView.setImage(new Image("customersitting.png"));
             customerImageView.setFitWidth(230);
