@@ -246,61 +246,6 @@ public class TheSleepingBarber extends Application {
         }
     }
 
-    /*
-     * public void updateCustomer(ImageView customerImageView) {
-     * customerImageView.setImage(new Image("customer.png"));
-     * customerImageView.setFitWidth(290);
-     * customerImageView.setFitHeight(290);
-     * customerImageView.translateXProperty().set(1000);
-     * customerImageView.translateYProperty().set(345);
-     * 
-     * }
-     */
-
-    /* public static void animateCustomerEntering(int customerId) {
-        ImageView customerImageView = new ImageView(new Image("customer.png"));
-        Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
-        waitingCustomersImageView.add(customerImageView);
-        customerImageView.setPreserveRatio(true);
-        customerImageView.setFitWidth(290);
-        customerImageView.setFitHeight(290);
-        customerImageView.setTranslateX(1100);
-        customerImageView.setTranslateY(345);
-        
-        BarberShop.setWaitingCustomersImageView(customerImageView);
-        root.getChildren().add(customerImageView);
-
-        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(100), customerImageView);
-
-        if (BarberShop.isSleeping()) {
-            enteringTransition.setToX(260);
-            enteringTransition.setToY(370);
-
-            enteringTransition.play();            
-        } else {
-
-            double initialX = 825;
-            double spacing = 100;
-
-            for (ImageView imageView : waitingCustomersImageView) {
-                enteringTransition.setToX(initialX);
-                enteringTransition.setToY(345);
-                initialX -= spacing;
-                enteringTransition = new TranslateTransition(Duration.millis(100), imageView);
-                //enteringTransition.play();
-            }
-        } 
-
-        enteringTransition.play();
-
-        enteringTransition.setOnFinished(event -> {
-            customerImageView.setImage(new Image("customersitting.png"));
-            customerImageView.setFitWidth(230);
-            customerImageView.setFitHeight(250);
-            customerImageView.setPreserveRatio(true);
-        });
-    } */
-
     public static void animateCustomerEntering(int customerId) {
         ImageView customerImageView = new ImageView(new Image("customer.png"));
         Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
@@ -326,7 +271,6 @@ public class TheSleepingBarber extends Application {
                     customerImageView.setPreserveRatio(true);
             });
         } else {
-            //double initialX = 825;
             double spacing = 100;
 
             for (ImageView imageView : waitingCustomersImageView) {
