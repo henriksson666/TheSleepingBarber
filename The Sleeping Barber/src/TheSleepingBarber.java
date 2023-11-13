@@ -94,7 +94,6 @@ public class TheSleepingBarber extends Application {
         permanentControlVBox.getChildren().addAll(resetButton, barberControlVBox, customerControlVBox, randomChoice);
 
         ImageView barberImageView = createBarberView();
-        // ImageView customerImageView = createCustomerImageView();
         root.getChildren().addAll(informationControlVBox, barberImageView);
 
         BarberShop barberShop = new BarberShop(waitingRoomCustomers, servedCustomers, lostCustomers);
@@ -140,6 +139,7 @@ public class TheSleepingBarber extends Application {
                 customerGeneratorThread[0] = new CustomerGenerator(barberShop);
                 barberShop.resumeThread();
                 customerGeneratorThread[0].resumeThread();
+                root.getChildren().remove(barberImageView);
             }
 
             barberShop.setBarberSpeed((int) barberSlider.getValue());
@@ -265,10 +265,10 @@ public class TheSleepingBarber extends Application {
             enteringTransition.setToY(370);
             enteringTransition.play();
             enteringTransition.setOnFinished(event -> {
-                    customerImageView.setImage(new Image("customersitting.png"));
-                    customerImageView.setFitWidth(230);
-                    customerImageView.setFitHeight(250);
-                    customerImageView.setPreserveRatio(true);
+                customerImageView.setImage(new Image("customersitting.png"));
+                customerImageView.setFitWidth(230);
+                customerImageView.setFitHeight(250);
+                customerImageView.setPreserveRatio(true);
             });
         } else {
             double spacing = 100;
@@ -279,7 +279,7 @@ public class TheSleepingBarber extends Application {
                 enteringTransition.setToY(345);
                 enteringTransition.play();
                 initialX -= spacing;
-                
+
                 enteringTransition.setOnFinished(event -> {
                     customerImageView.setImage(new Image("customersitting.png"));
                     customerImageView.setFitWidth(230);
@@ -354,7 +354,7 @@ public class TheSleepingBarber extends Application {
         vBox.setEffect(shadow);
 
         return vBox;
-    } // createInformationControlVBox
+    }
 
     private VBox createControlVBox(String string) {
         VBox vBox = new VBox();
@@ -456,20 +456,6 @@ public class TheSleepingBarber extends Application {
 
         return imageView;
     }
-
-    /*
-     * private ImageView createCustomerImageView() {
-     * ImageView imageView = new ImageView();
-     * imageView.setImage(new Image("customer.png"));
-     * imageView.setPreserveRatio(true);
-     * imageView.setFitWidth(290);
-     * imageView.setFitHeight(290);
-     * imageView.translateXProperty().set(1000);
-     * imageView.translateYProperty().set(345);
-     * 
-     * return imageView;
-     * }
-     */
 }
 
 class BarberShop {
@@ -515,7 +501,8 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1000), event -> {
+
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
                             Platform.runLater(() -> {
                                 TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
                             });
@@ -560,9 +547,9 @@ class BarberShop {
                 System.out.println("Customer " + id + " is leaving because the shop is full.");
                 lostCustomers.setText("" + lostCustomersCount++);
 
-                /* Platform.runLater(() -> {
+                Platform.runLater(() -> {
                     TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
-                }); */
+                });
                 mutex.release();
             }
         }));
@@ -610,6 +597,7 @@ class BarberShop {
         servedCustomersCount = 1;
         lostCustomersCount = 1;
         waitingCustomers.clear();
+        waitingCustomersImageView.clear();
 
         Platform.runLater(() -> {
             waitingRoomCustomers.setText("0");
@@ -653,12 +641,6 @@ class CustomerGenerator extends Thread {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 if (isRunning) {
-
-                    /*
-                     * Platform.runLater(() -> {
-                     * TheSleepingBarber.animateCustomerEntering(customerId);
-                     * });
-                     */
 
                     shop.customer(customerId);
                     customerId++;
