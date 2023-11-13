@@ -36,6 +36,9 @@ import javafx.util.Duration;
 public class TheSleepingBarber extends Application {
     public static final int CHAIRS = 5;
     public static Pane root;
+    private static double initialX = 825;
+    private static int iterations = 0;
+    private static final int SPOTS_PER_ITERATION = 5;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -254,28 +257,38 @@ public class TheSleepingBarber extends Application {
      * }
      */
 
-    public static void animateCustomerEntering(int customerId) {
+    /* public static void animateCustomerEntering(int customerId) {
         ImageView customerImageView = new ImageView(new Image("customer.png"));
+        Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
+        waitingCustomersImageView.add(customerImageView);
         customerImageView.setPreserveRatio(true);
         customerImageView.setFitWidth(290);
         customerImageView.setFitHeight(290);
         customerImageView.setTranslateX(1100);
         customerImageView.setTranslateY(345);
+        
         BarberShop.setWaitingCustomersImageView(customerImageView);
         root.getChildren().add(customerImageView);
 
-        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+        TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(100), customerImageView);
 
         if (BarberShop.isSleeping()) {
-            //enteringTransition.setToX(825);
-            //enteringTransition.setToY(345);
-            enteringTransition.setToX(190);
-            enteringTransition.setToY(350);
+            enteringTransition.setToX(260);
+            enteringTransition.setToY(370);
+
+            enteringTransition.play();            
         } else {
-            //enteringTransition.setToX(190);
-            //enteringTransition.setToY(350);
-            enteringTransition.setToX(825);
-            enteringTransition.setToY(345);
+
+            double initialX = 825;
+            double spacing = 100;
+
+            for (ImageView imageView : waitingCustomersImageView) {
+                enteringTransition.setToX(initialX);
+                enteringTransition.setToY(345);
+                initialX -= spacing;
+                enteringTransition = new TranslateTransition(Duration.millis(100), imageView);
+                //enteringTransition.play();
+            }
         } 
 
         enteringTransition.play();
@@ -286,12 +299,63 @@ public class TheSleepingBarber extends Application {
             customerImageView.setFitHeight(250);
             customerImageView.setPreserveRatio(true);
         });
+    } */
 
+    public static void animateCustomerEntering(int customerId) {
+        ImageView customerImageView = new ImageView(new Image("customer.png"));
+        Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
+        waitingCustomersImageView.add(customerImageView);
+        customerImageView.setPreserveRatio(true);
+        customerImageView.setFitWidth(290);
+        customerImageView.setFitHeight(290);
+        customerImageView.setTranslateX(1100);
+        customerImageView.setTranslateY(345);
+
+        BarberShop.setWaitingCustomersImageView(customerImageView);
+        root.getChildren().add(customerImageView);
+
+        if (BarberShop.isSleeping()) {
+            TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+            enteringTransition.setToX(260);
+            enteringTransition.setToY(370);
+            enteringTransition.play();
+            enteringTransition.setOnFinished(event -> {
+                    customerImageView.setImage(new Image("customersitting.png"));
+                    customerImageView.setFitWidth(230);
+                    customerImageView.setFitHeight(250);
+                    customerImageView.setPreserveRatio(true);
+            });
+        } else {
+            //double initialX = 825;
+            double spacing = 100;
+
+            for (ImageView imageView : waitingCustomersImageView) {
+                TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), imageView);
+                enteringTransition.setToX(initialX);
+                enteringTransition.setToY(345);
+                enteringTransition.play();
+                initialX -= spacing;
+                
+                enteringTransition.setOnFinished(event -> {
+                    customerImageView.setImage(new Image("customersitting.png"));
+                    customerImageView.setFitWidth(230);
+                    customerImageView.setFitHeight(250);
+                    customerImageView.setPreserveRatio(true);
+                });
+            }
+            iterations++;
+
+            if (iterations >= SPOTS_PER_ITERATION) {
+                initialX = 825;
+                iterations = 0;
+            }
+        }
     }
 
     public static void animateCustomerLeaving(ImageView customerImageView) {
         customerImageView.setPreserveRatio(true);
         customerImageView.setImage(new Image("customer.png"));
+
         TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
         leavingTransition.setToX(1000);
         leavingTransition.setToY(345);
@@ -507,7 +571,7 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
-                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(barberSpeed), event -> {
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1000), event -> {
                             Platform.runLater(() -> {
                                 TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
                             });
@@ -552,9 +616,9 @@ class BarberShop {
                 System.out.println("Customer " + id + " is leaving because the shop is full.");
                 lostCustomers.setText("" + lostCustomersCount++);
 
-                Platform.runLater(() -> {
+                /* Platform.runLater(() -> {
                     TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
-                });
+                }); */
                 mutex.release();
             }
         }));
