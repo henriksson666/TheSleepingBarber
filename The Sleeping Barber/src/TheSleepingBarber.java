@@ -507,10 +507,13 @@ class BarberShop {
                         chairs.release();
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(barberSpeed), event -> {
+                            Platform.runLater(() -> {
+                                TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                            });
+                        }));
+                        timeline.play();
 
-                        Platform.runLater(() -> {
-                            TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
-                        });
                         Thread.sleep(barberSpeed);
 
                         if (Thread.currentThread().isInterrupted()) {
