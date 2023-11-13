@@ -266,7 +266,7 @@ public class TheSleepingBarber extends Application {
 
         TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
 
-        if (!BarberShop.isSleeping()) {
+        if (BarberShop.isSleeping()) {
             //enteringTransition.setToX(825);
             //enteringTransition.setToY(345);
             enteringTransition.setToX(190);
