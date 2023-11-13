@@ -246,7 +246,7 @@ public class TheSleepingBarber extends Application {
         }
     }
 
-    public static void animateCustomerEntering(int customerId) {
+    /* public static void animateCustomerEntering(int customerId) {
         ImageView customerImageView = new ImageView(new Image("customer.png"));
         Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
         waitingCustomersImageView.add(customerImageView);
@@ -294,7 +294,82 @@ public class TheSleepingBarber extends Application {
                 iterations = 0;
             }
         }
+    } */
+
+    public static void animateCustomerEntering(int customerId) {
+        ImageView customerImageView = new ImageView(new Image("customer.png"));
+        customerImageView.setId("customer" + customerId); // Set a unique ID for each customer
+        customerImageView.setPreserveRatio(true);
+        customerImageView.setFitWidth(290);
+        customerImageView.setFitHeight(290);
+        customerImageView.setTranslateX(1100);
+        customerImageView.setTranslateY(345);
+    
+        BarberShop.setWaitingCustomersImageView(customerImageView);
+        root.getChildren().add(customerImageView);
+    
+        if (BarberShop.isSleeping()) {
+            TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+            enteringTransition.setToX(260);
+            enteringTransition.setToY(370);
+            enteringTransition.play();
+            enteringTransition.setOnFinished(event -> {
+                customerImageView.setImage(new Image("customersitting.png"));
+                customerImageView.setFitWidth(230);
+                customerImageView.setFitHeight(250);
+                customerImageView.setPreserveRatio(true);
+            });
+        } else {
+            double spacing = 100;
+    
+            //for (ImageView imageView : waitingCustomersImageView) {
+                TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+                enteringTransition.setToX(initialX);
+                enteringTransition.setToY(345);
+                enteringTransition.play();
+                initialX -= spacing;
+    
+                enteringTransition.setOnFinished(event -> {
+                    customerImageView.setImage(new Image("customersitting.png"));
+                    customerImageView.setFitWidth(230);
+                    customerImageView.setFitHeight(250);
+                    customerImageView.setPreserveRatio(true);
+                });
+            //}
+            
+            BarberShop.setWaitingCustomersImageView(customerImageView);
+
+            iterations++;
+    
+            if (iterations >= SPOTS_PER_ITERATION) {
+                initialX = 825;
+                iterations = 0;
+            }
+        }
     }
+
+    public static void animateCustomerLeavingBarber(ImageView customerImageView) {
+        TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+        leavingTransition.setToX(1000);
+        leavingTransition.setToY(345);
+        leavingTransition.setOnFinished(event -> {
+            root.getChildren().remove(customerImageView);
+        });
+
+        leavingTransition.play();
+    }
+
+    public static void animateCustomerLeavingWaitingArea(ImageView customerImageView) {
+        TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
+        leavingTransition.setToX(1000);
+        leavingTransition.setToY(345);
+        leavingTransition.setOnFinished(event -> {
+            root.getChildren().remove(customerImageView);
+        });
+
+        leavingTransition.play();
+    }
+    
 
     public static void animateCustomerLeaving(ImageView customerImageView) {
         customerImageView.setPreserveRatio(true);
@@ -306,6 +381,7 @@ public class TheSleepingBarber extends Application {
         leavingTransition.setOnFinished(event -> {
             root.getChildren().remove(customerImageView);
         });
+        
         leavingTransition.play();
     }
 
@@ -502,12 +578,14 @@ class BarberShop {
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
 
-                        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
+                        //Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
                             Platform.runLater(() -> {
-                                TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                               //TheSleepingBarber.animateCustomerLeavingWaitingArea(getWaitingCustomersImageView());
+                                //TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                                TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
                             });
-                        }));
-                        timeline.play();
+                        //}));
+                        //timeline.play();
 
                         Thread.sleep(barberSpeed);
 
@@ -548,7 +626,8 @@ class BarberShop {
                 lostCustomers.setText("" + lostCustomersCount++);
 
                 Platform.runLater(() -> {
-                    TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                    //TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                    TheSleepingBarber.animateCustomerLeavingWaitingArea(getWaitingCustomersImageView());
                 });
                 mutex.release();
             }
