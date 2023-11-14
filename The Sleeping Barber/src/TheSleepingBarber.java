@@ -280,6 +280,7 @@ public class TheSleepingBarber extends Application {
                 customerImageView.setFitHeight(250);
                 customerImageView.setPreserveRatio(true);
             });
+
         } else {
             double spacing = 100;
 
@@ -617,9 +618,9 @@ class BarberShop {
                 System.out.println("Customer " + id + " is leaving because the shop is full.");
                 lostCustomers.setText("" + lostCustomersCount++);
 
-                // Platform.runLater(() -> {
-                TheSleepingBarber.animateCustomerLeavingWaitingArea();
-                // });
+                Platform.runLater(() -> {
+                    TheSleepingBarber.animateCustomerLeavingWaitingArea();
+                });
 
                 mutex.release();
             }
