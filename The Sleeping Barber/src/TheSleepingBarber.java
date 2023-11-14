@@ -40,6 +40,7 @@ public class TheSleepingBarber extends Application {
     private static int iterations = 0;
     private static final int SPOTS_PER_ITERATION = 5;
     private static Queue<ImageView> waitingCustomersImageView = new LinkedList<>();
+    private static ImageView[] customerLeavingWithoutAttendance = new ImageView[1];
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -256,7 +257,12 @@ public class TheSleepingBarber extends Application {
         customerImageView.setFitHeight(290);
         customerImageView.setTranslateX(1000);
         customerImageView.setTranslateY(345);
-        waitingCustomersImageView.add(customerImageView);
+        
+        if (BarberShop.waitingCustomers.size() < CHAIRS) {
+            waitingCustomersImageView.add(customerImageView);
+        } else {
+            customerLeavingWithoutAttendance[0] = customerImageView;
+        }
 
         BarberShop.setWaitingCustomersImageView(customerImageView);
         root.getChildren().add(customerImageView);
@@ -334,7 +340,10 @@ public class TheSleepingBarber extends Application {
         leavingTransition.play();
     }
 
-    public static void animateCustomerLeavingWaitingArea(ImageView customerImageView) {
+    public static void animateCustomerLeavingWaitingArea() {
+        ImageView customerImageView = customerLeavingWithoutAttendance[0];
+        customerImageView.setPreserveRatio(true);
+        customerImageView.setImage(new Image("customer.png"));
         TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
         leavingTransition.setToX(1000);
         leavingTransition.setToY(345);
@@ -564,7 +573,7 @@ class BarberShop {
 
                         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
                             //Platform.runLater(() -> {
-                                TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
+                                //TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
                             //);
                         }));
 
@@ -609,7 +618,7 @@ class BarberShop {
                 lostCustomers.setText("" + lostCustomersCount++);
 
                 //Platform.runLater(() -> {
-                    TheSleepingBarber.animateCustomerLeavingWaitingArea(getWaitingCustomersImageView());
+                    TheSleepingBarber.animateCustomerLeavingWaitingArea();
                 //});
 
                 mutex.release();
