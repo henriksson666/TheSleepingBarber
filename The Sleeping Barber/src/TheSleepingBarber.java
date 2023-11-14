@@ -258,13 +258,14 @@ public class TheSleepingBarber extends Application {
         customerImageView.setTranslateX(1000);
         customerImageView.setTranslateY(345);
 
-        if (BarberShop.waitingCustomers.size() < CHAIRS) {
-            waitingCustomersImageView.add(customerImageView);
-        } else {
-            customerLeavingWithoutAttendance[0] = customerImageView;
-        }
+            if (BarberShop.waitingCustomers.size() < CHAIRS) {
+                waitingCustomersImageView.add(customerImageView);
+            } else {
+                customerLeavingWithoutAttendance[0] = customerImageView;
+            }
 
         BarberShop.setWaitingCustomersImageView(customerImageView);
+        
         root.getChildren().add(customerImageView);
 
         if (BarberShop.isSleeping()) {
@@ -560,9 +561,9 @@ class BarberShop {
                         isSleeping = false;
                         int customerId = waitingCustomers.poll();
 
-                        // Platform.runLater(() -> {
-                        TheSleepingBarber.animateCustomerGoingToBarberChair();
-                        // });
+                        Platform.runLater(() -> {
+                            TheSleepingBarber.animateCustomerGoingToBarberChair();
+                        });
 
                         waitingRoomCustomers.setText("" + waitingCustomers.size());
                         servedCustomers.setText("" + servedCustomersCount++);
