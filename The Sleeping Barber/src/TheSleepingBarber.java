@@ -140,7 +140,8 @@ public class TheSleepingBarber extends Application {
                 customerGeneratorThread[0] = new CustomerGenerator(barberShop);
                 barberShop.resumeThread();
                 customerGeneratorThread[0].resumeThread();
-                root.getChildren().remove(barberImageView);
+                waitingCustomersImageView.clear();
+                clearWaitingCustomers();
             }
 
             barberShop.setBarberSpeed((int) barberSlider.getValue());
@@ -249,7 +250,7 @@ public class TheSleepingBarber extends Application {
 
     public static void animateCustomerEntering(int customerId) {
         ImageView customerImageView = new ImageView(new Image("customer.png"));
-        customerImageView.setId("customer" + customerId); // Set a unique ID for each customer
+        customerImageView.setId("customer" + customerId);
         customerImageView.setPreserveRatio(true);
         customerImageView.setFitWidth(290);
         customerImageView.setFitHeight(290);
@@ -264,7 +265,9 @@ public class TheSleepingBarber extends Application {
             TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
             enteringTransition.setToX(260);
             enteringTransition.setToY(370);
+            
             enteringTransition.play();
+
             enteringTransition.setOnFinished(event -> {
                 customerImageView.setImage(new Image("customersitting.png"));
                 customerImageView.setFitWidth(230);
@@ -277,7 +280,9 @@ public class TheSleepingBarber extends Application {
             TranslateTransition enteringTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
             enteringTransition.setToX(initialX);
             enteringTransition.setToY(345);
+
             enteringTransition.play();
+            
             initialX -= spacing;
 
             enteringTransition.setOnFinished(event -> {
@@ -352,6 +357,10 @@ public class TheSleepingBarber extends Application {
         });
 
         leavingTransition.play();
+    }
+
+    public void clearWaitingCustomers() {
+        root.getChildren().removeAll(waitingCustomersImageView);
     }
 
     private VBox createPermanentControlVBox() {
@@ -512,10 +521,10 @@ class BarberShop {
     private static List<ImageView> waitingCustomersImageView = new ArrayList<>();
     private int servedCustomersCount = 1;
     private int lostCustomersCount = 1;
-    private volatile int barberSpeed;
-    private Text waitingRoomCustomers;
-    private Text servedCustomers;
-    private Text lostCustomers;
+    private volatile int barberSpeed = 2000;
+    private Text waitingRoomCustomers = new Text();
+    private Text servedCustomers = new Text();
+    private Text lostCustomers = new Text();
     private volatile boolean isRunning = true;
     private static volatile boolean isSleeping = true;
 
@@ -531,6 +540,7 @@ class BarberShop {
                 if (isRunning) {
 
                     mutex.acquire();
+
                     if (waitingCustomers.isEmpty()) {
                         System.out.println("Barber is sleeping.");
                         isSleeping = true;
@@ -539,9 +549,11 @@ class BarberShop {
                     } else {
                         isSleeping = false;
                         int customerId = waitingCustomers.poll();
-                        Platform.runLater(() -> {
+
+                        //Platform.runLater(() -> {
                             TheSleepingBarber.animateCustomerGoingToBarberChair();
-                        });
+                        //});
+                        
                         waitingRoomCustomers.setText("" + waitingCustomers.size());
                         servedCustomers.setText("" + servedCustomersCount++);
                         mutex.release();
@@ -551,11 +563,11 @@ class BarberShop {
                         System.out.println("Barber is cutting hair for customer " + customerId);
 
                         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
-                            Platform.runLater(() -> {
-                                // TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
+                            //Platform.runLater(() -> {
                                 TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
-                            });
+                            //);
                         }));
+
                         timeline.play();
 
                         Thread.sleep(barberSpeed);
@@ -596,15 +608,15 @@ class BarberShop {
                 System.out.println("Customer " + id + " is leaving because the shop is full.");
                 lostCustomers.setText("" + lostCustomersCount++);
 
-                Platform.runLater(() -> {
+                //Platform.runLater(() -> {
                     TheSleepingBarber.animateCustomerLeavingWaitingArea(getWaitingCustomersImageView());
-                });
+                //});
+
                 mutex.release();
             }
         }));
 
         timeline.play();
-
     }
 
     public static boolean isSleeping() {
