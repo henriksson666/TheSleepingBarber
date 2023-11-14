@@ -578,14 +578,13 @@ class BarberShop {
 
                         System.out.println("Barber is cutting hair for customer " + customerId);
 
-                        //Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
                             Platform.runLater(() -> {
-                               //TheSleepingBarber.animateCustomerLeavingWaitingArea(getWaitingCustomersImageView());
                                 //TheSleepingBarber.animateCustomerLeaving(getWaitingCustomersImageView());
                                 TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
                             });
-                        //}));
-                        //timeline.play();
+                        }));
+                        timeline.play();
 
                         Thread.sleep(barberSpeed);
 
@@ -632,6 +631,7 @@ class BarberShop {
                 mutex.release();
             }
         }));
+        
         timeline.play();
 
     }
