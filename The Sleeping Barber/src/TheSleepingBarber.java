@@ -265,7 +265,7 @@ public class TheSleepingBarber extends Application {
             }
 
         BarberShop.setWaitingCustomersImageView(customerImageView);
-        
+
         root.getChildren().add(customerImageView);
 
         if (BarberShop.isSleeping()) {
@@ -371,7 +371,11 @@ public class TheSleepingBarber extends Application {
     }
 
     public void clearWaitingCustomers() {
-        root.getChildren().removeAll(waitingCustomersImageView);
+        for (ImageView imageView : waitingCustomersImageView) {
+            root.getChildren().remove(imageView);
+        }
+        waitingCustomersImageView.clear();
+        root.getChildren().remove(customerLeavingWithoutAttendance[0]);
     }
 
     private VBox createPermanentControlVBox() {
@@ -574,9 +578,9 @@ class BarberShop {
                         System.out.println("Barber is cutting hair for customer " + customerId);
 
                         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
-                            // Platform.runLater(() -> {
+                            Platform.runLater(() -> {
                             TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
-                            // );
+                            });
                         }));
 
                         timeline.play();
