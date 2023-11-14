@@ -329,7 +329,7 @@ public class TheSleepingBarber extends Application {
         goingToBarberChairTransition.play();
     }
 
-    public static void animateCustomerLeavingBarber(ImageView customerImageView) {
+    /* public static void animateCustomerLeavingBarber(ImageView customerImageView) {
         TranslateTransition leavingTransition = new TranslateTransition(Duration.millis(1000), customerImageView);
         leavingTransition.setToX(1000);
         leavingTransition.setToY(345);
@@ -338,7 +338,7 @@ public class TheSleepingBarber extends Application {
         });
 
         leavingTransition.play();
-    }
+    } */
 
     public static void animateCustomerLeavingWaitingArea() {
         ImageView customerImageView = customerLeavingWithoutAttendance[0];
@@ -573,7 +573,7 @@ class BarberShop {
 
                         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(barberSpeed), event -> {
                             //Platform.runLater(() -> {
-                                //TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
+                                TheSleepingBarber.animateCustomerLeavingBarber(getWaitingCustomersImageView());
                             //);
                         }));
 
